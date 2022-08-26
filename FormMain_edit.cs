@@ -488,7 +488,7 @@ namespace WiiBalanceWalker
             if (checkBox_EnableJoystick.Checked)
             {
                 // VJoyFeeder.Initialize((uint)VJoyIDUpDown.Value);
-                writer.WriteData(1);
+                writer.WriteData(23);
                 status = true;
             }
             else

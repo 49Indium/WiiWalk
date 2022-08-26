@@ -1,1 +1,6 @@
-Build instructions
+## Build instructions
+
+Requires C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe to exist
+
+Run the script build.sh
+If WiiBalanceWalker is not installed, it will propt to install it
