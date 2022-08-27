@@ -6,6 +6,7 @@ Wii Walk allows you to turn your wii balance board into a controller, particular
 - Sprinting (faster weight shifts)
 - Turning, including whilst walking or sprinting (overall left/right weiht shifts)
 - Jumping (a loss of weight)
+
 This project was created in under 40 hours for the UQCS 2022 Hackathon. Much thanks goes to [lshchar](https://github.com/lshachar) as this project is heavily adapted from his modification of [WiimoteLib DLL](https://github.com/lshachar/WiiBalanceWalker).
 
 ## Background
