@@ -23,10 +23,13 @@ namespace WiiBalanceWalker
     public partial class FormMain : Form
     {
 
-        System.Timers.Timer infoUpdateTimer = new System.Timers.Timer() { Interval = 50, Enabled = false };
+        System.Timers.Timer infoUpdateTimer = new System.Timers.Timer() { Interval = 20, Enabled = false };
         System.Timers.Timer joyResetTimer = new System.Timers.Timer() { Interval = 240000, Enabled = false };
         public const double maxJumpLength = 0.5;
-        public const double maxWalkTime = 0.5;
+        public const double walkStartTime = 0.4;
+        public const double walkEndTime = 0.1;
+        public const double walkContinuationTime = 0.6;
+
 
         ActionList actionList = new ActionList();
         Wiimote wiiDevice = new Wiimote();
@@ -34,9 +37,10 @@ namespace WiiBalanceWalker
         DataWriter writer = new DataWriter("test.txt");
         DateTime jumpTime = DateTime.UtcNow;
         // The last change from left to right
-        DateTime latFootSwitchTime = DateTime.UtcNow;
+        DateTime lastFootSwitchTime = DateTime.UtcNow;
         // The last change in any state (including none)
         DateTime lastFootChangeStateTime = DateTime.UtcNow;
+        DateTime lastWalkTime = DateTime.UtcNow;
 
         enum Foot
         {
@@ -460,24 +464,28 @@ namespace WiiBalanceWalker
                 if (sendRight) currentFoot = Foot.Right;
 
                 bool alternateFoot = (currentFoot != Foot.None && currentFoot == get_opposite_foot(lastFoot));
-                bool withinWalkingTime = DateTime.UtcNow.Subtract(latFootSwitchTime).Seconds < maxWalkTime;
+                if (alternateFoot) BalanceWalker.FormMain.consoleBoxWriteLine("Alternates");
 
-                if (alternateFoot && withinWalkingTime && !isWalking)
+                double seconsdSinceLastFootSwitch = DateTime.UtcNow.Subtract(lastFootSwitchTime).Seconds;
+                double secondsSinceLastWalk = DateTime.UtcNow.Subtract(lastWalkTime).Seconds;
+
+                if (alternateFoot && !isWalking && ( seconsdSinceLastFootSwitch < walkStartTime || secondsSinceLastWalk < walkContinuationTime))
                 {
                     actionList.Forward.Start();
                     BalanceWalker.FormMain.consoleBoxWriteLine("He Walks");
+                    if (secondsSinceLastWalk < walkContinuationTime) BalanceWalker.FormMain.consoleBoxWriteLine("(continuation)");
                     isWalking = true;
                 }
-                else if (isWalking && !withinWalkingTime)
+                else if (isWalking && seconsdSinceLastFootSwitch >= walkEndTime)
                 {
                     actionList.Forward.Stop();
                     BalanceWalker.FormMain.consoleBoxWriteLine("He Stop");
                     isWalking = false;
                 }
 
-                if (alternateFoot) latFootSwitchTime = DateTime.UtcNow;
+                if (alternateFoot) lastFootSwitchTime = DateTime.UtcNow;
                 if (currentFoot != lastFoot) lastFootChangeStateTime = DateTime.UtcNow;
-                lastFoot = currentFoot;
+                if (currentFoot != Foot.None) lastFoot = currentFoot;
 
                 double joyX = 0, joyY = 0;
 
