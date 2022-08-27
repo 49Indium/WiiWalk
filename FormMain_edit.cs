@@ -28,8 +28,11 @@ namespace WiiBalanceWalker
         public const double maxJumpLength = 0.5;
         public const double walkStartTime = 0.5;
         public const double walkEndTime = 0.3;
-        public const double walkContinuationTime = 1.0;
-
+        public const double walkContinuationTime = 1.2;
+        public const bool walkingOn = true;
+        public const bool turningOn = true;
+        public const bool jumpingOn = true;
+        public const double turningNullZonePercentage = 10;
 
         ActionList actionList = new ActionList();
         Wiimote wiiDevice = new Wiimote();
@@ -457,38 +460,65 @@ namespace WiiBalanceWalker
 
             if (checkBox_EnableJoystick.Checked)
             {
-
-                // Up foot should be opposite to down foor
-                Foot currentFoot = Foot.None;
-                if (sendLeft) currentFoot = Foot.Left;
-                if (sendRight) currentFoot = Foot.Right;
-
-                DateTime now = DateTime.UtcNow;
-
-                bool alternateFoot = (currentFoot != Foot.None && currentFoot == get_opposite_foot(lastFoot));
-                if (alternateFoot) BalanceWalker.FormMain.consoleBoxWriteLine("Alternates");
-
-                double seconsdSinceLastFootSwitch = (now - lastFootSwitchTime).TotalMilliseconds / 1000;
-                double secondsSinceLastWalk = (now - lastWalkTime).TotalMilliseconds / 1000;
-
-                if (alternateFoot && !isWalking && ( seconsdSinceLastFootSwitch < walkStartTime || secondsSinceLastWalk < walkContinuationTime))
+                if (walkingOn)
                 {
-                    actionList.Forward.Start();
-                    BalanceWalker.FormMain.consoleBoxWriteLine("He Walks");
-                    if (secondsSinceLastWalk < walkContinuationTime) BalanceWalker.FormMain.consoleBoxWriteLine("(continuation)");
-                    isWalking = true;
-                }
-                else if (isWalking && seconsdSinceLastFootSwitch >= walkEndTime)
-                {
-                    actionList.Forward.Stop();
-                    BalanceWalker.FormMain.consoleBoxWriteLine("He Stop");
-                    lastWalkTime = now;
-                    isWalking = false;
+                    // Up foot should be opposite to down foor
+                    Foot currentFoot = Foot.None;
+                    if (sendLeft) currentFoot = Foot.Left;
+                    if (sendRight) currentFoot = Foot.Right;
+
+                    DateTime now = DateTime.UtcNow;
+
+                    bool alternateFoot = (currentFoot != Foot.None && currentFoot == get_opposite_foot(lastFoot));
+                    if (alternateFoot) BalanceWalker.FormMain.consoleBoxWriteLine("Alternates");
+
+                    double seconsdSinceLastFootSwitch = (now - lastFootSwitchTime).TotalMilliseconds / 1000;
+                    double secondsSinceLastWalk = (now - lastWalkTime).TotalMilliseconds / 1000;
+
+                    if (alternateFoot && !isWalking && (seconsdSinceLastFootSwitch < walkStartTime || secondsSinceLastWalk < walkContinuationTime))
+                    {
+                        actionList.Forward.Start();
+                        BalanceWalker.FormMain.consoleBoxWriteLine("He Walks");
+                        if (secondsSinceLastWalk < walkContinuationTime) BalanceWalker.FormMain.consoleBoxWriteLine("(continuation)");
+                        isWalking = true;
+                    }
+                    else if (isWalking && seconsdSinceLastFootSwitch >= walkEndTime)
+                    {
+                        actionList.Forward.Stop();
+                        BalanceWalker.FormMain.consoleBoxWriteLine("He Stop");
+                        lastWalkTime = now;
+                        isWalking = false;
+                    }
+
+                    if (alternateFoot) lastFootSwitchTime = now;
+                    if (currentFoot != lastFoot) lastFootChangeStateTime = now;
+                    if (currentFoot != Foot.None) lastFoot = currentFoot;
                 }
 
-                if (alternateFoot) lastFootSwitchTime = now;
-                if (currentFoot != lastFoot) lastFootChangeStateTime = now;
-                if (currentFoot != Foot.None) lastFoot = currentFoot;
+                if (turningOn)
+                {
+                    if (brX < 50.0 - turningNullZonePercentage)
+                    {
+                        actionList.Left.Start();
+                        BalanceWalker.FormMain.consoleBoxWriteLine("Move Left");
+
+                    }
+                    else
+                    {
+                        actionList.Left.Stop();
+                    }
+                    if (brX > 50.0 + turningNullZonePercentage)
+                    {
+                        actionList.Right.Start();
+                        BalanceWalker.FormMain.consoleBoxWriteLine("Move Right");
+                    }
+                    else
+                    {
+                        actionList.Right.Stop();
+                    }
+                }
+
+                
 
                 double joyX = 0, joyY = 0;
 
