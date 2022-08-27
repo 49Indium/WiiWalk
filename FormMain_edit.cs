@@ -23,19 +23,19 @@ namespace WiiBalanceWalker
     public partial class FormMain : Form
     {
 
-        System.Timers.Timer infoUpdateTimer = new System.Timers.Timer() { Interval = 25, Enabled = false };
+        System.Timers.Timer infoUpdateTimer = new System.Timers.Timer() { Interval = 18, Enabled = false };
         System.Timers.Timer joyResetTimer = new System.Timers.Timer() { Interval = 240000, Enabled = false };
-        public const double maxJumpLength = 1.0;
+        public const double maxJumpLength = 0.6;
         public const double walkStartTime = 0.5;
-        public const double walkEndTime = 0.3;
-        public const double sprintStartTime = 0.18;
-        public const double sprintEndTime = 0.18;
-        public const double walkContinuationTime = 1.2;
+        public const double walkEndTime = 0.4;
+        public const double sprintStartTime = 0.15;
+        public const double sprintEndTime = 0.25;
+        public const double walkContinuationTime = 1.3;
         public const bool walkingOn = true;
         public const bool sprintingOn = true;
         public const bool turningOn = true;
         public const bool jumpingOn = true;
-        public const double turningNullZonePercentage = 10;
+        public const double turningNullZonePercentage = 15;
 
         ActionList actionList = new ActionList();
         Wiimote wiiDevice = new Wiimote();
@@ -59,6 +59,7 @@ namespace WiiBalanceWalker
         Foot lastFoot = Foot.None;
 
         bool isWalking = false;
+        bool isSprinting = false;
         bool isJumping = false;
         bool wasOnBalanceBoard = false;
 
@@ -483,6 +484,22 @@ namespace WiiBalanceWalker
                     double seconsdSinceLastFootSwitch = (now - lastFootSwitchTime).TotalMilliseconds / 1000;
                     double secondsSinceLastWalk = (now - lastWalkTime).TotalMilliseconds / 1000;
 
+                    if (sprintingOn)
+                    {
+                        if (alternateFoot && !isSprinting && seconsdSinceLastFootSwitch < sprintStartTime)
+                        {
+                            actionList.Modifier.Start();
+                            BalanceWalker.FormMain.consoleBoxWriteLine("He Sprint " + seconsdSinceLastFootSwitch.ToString());
+                            isSprinting = true;
+                        }
+                        else if (isSprinting && seconsdSinceLastFootSwitch >= sprintEndTime && !isJumping)
+                        {
+                            BalanceWalker.FormMain.consoleBoxWriteLine("He Stop Sprint");
+                            actionList.Modifier.Stop();
+                            isSprinting = false;
+                        }
+                    }
+
                     if (alternateFoot && !isWalking && (seconsdSinceLastFootSwitch < walkStartTime || secondsSinceLastWalk < walkContinuationTime))
                     {
                         actionList.Forward.Start();
@@ -501,18 +518,6 @@ namespace WiiBalanceWalker
                     if (alternateFoot) lastFootSwitchTime = now;
                     if (currentFoot != lastFoot) lastFootChangeStateTime = now;
                     if (currentFoot != Foot.None) lastFoot = currentFoot;
-
-                    if (sprintingOn)
-                    {
-                        if (seconsdSinceLastFootSwitch < sprintStartTime)
-                        {
-                            actionList.Modifier.Start();
-                        }
-                        else
-                        {
-                            actionList.Modifier.Stop();
-                        }
-                    }
                 }
 
                 if (turningOn)
