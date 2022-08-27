@@ -25,12 +25,12 @@ namespace WiiBalanceWalker
 
         System.Timers.Timer infoUpdateTimer = new System.Timers.Timer() { Interval = 25, Enabled = false };
         System.Timers.Timer joyResetTimer = new System.Timers.Timer() { Interval = 240000, Enabled = false };
-        public const double maxJumpLength = 1.2;
+        public const double maxJumpLength = 1.0;
         public const double walkStartTime = 0.5;
         public const double walkEndTime = 0.3;
         public const double walkContinuationTime = 1.2;
-        public const bool walkingOn = true;
-        public const bool turningOn = true;
+        public const bool walkingOn = false;
+        public const bool turningOn = false;
         public const bool jumpingOn = true;
         public const double turningNullZonePercentage = 10;
 
@@ -56,6 +56,7 @@ namespace WiiBalanceWalker
 
         bool isWalking = false;
         bool isJumping = false;
+        bool wasOnBalanceBoard = false;
 
         bool setCenterOffset = false;
         bool resetCenterOffsetPossible = false;
@@ -522,27 +523,34 @@ namespace WiiBalanceWalker
                 if (jumpingOn)
                 {
                     DateTime now = DateTime.UtcNow;
-                    if (owWeight < 1f)
+                    bool offBalanceBoard = owWeight < 1f;
+                    double secondsSinceLastJump = (now - lastGroundTime).TotalMilliseconds / 1000;
+
+                    // Jump
+                    if (!isJumping && wasOnBalanceBoard && offBalanceBoard)
                     {
-                        double secondsSinceLastJump = (now - lastGroundTime).TotalMilliseconds / 1000;
-                        if (!isJumping && secondsSinceLastJump < maxJumpLength)
-                        {
-                            actionList.Jump.Start();
-                            BalanceWalker.FormMain.consoleBoxWriteLine("Jump");
-                            isJumping = true;
-                        }
-                        else if (secondsSinceLastJump >= maxJumpLength)
-                        {
-                            actionList.Jump.Stop();
-                            isJumping = false;
-                        }
+                        actionList.Jump.Start();
+                        BalanceWalker.FormMain.consoleBoxWriteLine("Jump");
+                        isJumping = true;
                     }
-                    else
+                    // Flying
+                    if (isJumping && secondsSinceLastJump >= maxJumpLength)
                     {
-                        if (isJumping) actionList.Jump.Stop();
+                        actionList.Jump.Stop();
                         isJumping = false;
-                        lastGroundTime = now;
+                        BalanceWalker.FormMain.consoleBoxWriteLine("Flying");
                     }
+                    else if (isJumping && !offBalanceBoard)
+                    {
+                        actionList.Jump.Stop();
+                        BalanceWalker.FormMain.consoleBoxWriteLine("Land");
+                        isJumping = false;
+
+                    }
+
+                    if (!offBalanceBoard) lastGroundTime = now;
+
+                    wasOnBalanceBoard = !offBalanceBoard;
                 }
 
                 double joyX = 0, joyY = 0;
