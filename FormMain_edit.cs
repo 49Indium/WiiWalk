@@ -19,17 +19,30 @@ using WiimoteLib;
 
 namespace WiiBalanceWalker
 {
+
     public partial class FormMain : Form
     {
 
         System.Timers.Timer infoUpdateTimer = new System.Timers.Timer() { Interval = 50, Enabled = false };
         System.Timers.Timer joyResetTimer = new System.Timers.Timer() { Interval = 240000, Enabled = false };
+        public const double maxJumpLength = 0.5;
+        public const double maxWalkTime = 0.5;
 
         ActionList actionList = new ActionList();
         Wiimote wiiDevice = new Wiimote();
 
         DataWriter writer = new DataWriter("test.txt");
         DateTime jumpTime = DateTime.UtcNow;
+        DateTime walkTime = DateTime.UtcNow;
+
+        enum Foot
+        {
+            Left, Right, None
+        }
+
+        Foot lastFoot = Foot.None;
+
+        bool isWalking = false;
 
         bool setCenterOffset = false;
         bool resetCenterOffsetPossible = false;
@@ -389,7 +402,7 @@ namespace WiiBalanceWalker
 
             if (owWeight < 1f)
             {
-                if (DateTime.UtcNow.Subtract(jumpTime).Seconds < 2) sendJump = true;
+                if (DateTime.UtcNow.Subtract(jumpTime).Seconds < maxJumpLength) sendJump = true;
             }
             else
             {
@@ -437,6 +450,24 @@ namespace WiiBalanceWalker
 
             if (checkBox_EnableJoystick.Checked)
             {
+
+                // Up foot should be opposite to down foor
+                Foot currentUpFoot = Foot.None;
+                if (sendLeft) currentUpFoot = Foot.Right;
+                if (sendRight) currentUpFoot = Foot.Left;
+                if (currentUpFoot != Foot.None && currentUpFoot == lastFoot && DateTime.UtcNow.Subtract(walkTime).Seconds < maxWalkTime)
+                {
+                    actionList.Forward.Start();
+                    BalanceWalker.FormMain.consoleBoxWriteLine("Walks");
+                }
+                if (DateTime.UtcNow.Subtract(walkTime).Seconds > maxWalkTime)
+                {
+                    actionList.Forward.Stop();
+                    BalanceWalker.FormMain.consoleBoxWriteLine("Stop Walks");
+                }
+                if (currentUpFoot != Foot.None && currentUpFoot == lastFoot) walkTime = DateTime.UtcNow;
+                lastFoot = get_opposite_foot(currentUpFoot);
+
                 double joyX = 0, joyY = 0;
 
                 // send X/Y position of the player's Center of Gravity through vJoy
@@ -474,8 +505,7 @@ namespace WiiBalanceWalker
                     BalanceWalker.FormMain.consoleBoxWriteLine(values);
                 }
                 // VJoyFeeder.Setjoystick((int)joyX, (int)joyY, (int)(rwTopLeft * 100), (int)(rwTopRight * 100), (int)(rwBottomLeft * 100), (int)(rwBottomRight * 100), aButton);
-                string message = " " + owWeight.ToString("0.0") + " " + owrBottomLeft.ToString("0.0") + " " + owrBottomRight.ToString("0.0") + " " + owrTopRight.ToString("0.0") + " " + owrTopLeft.ToString("0.0");
-                writer.WriteMessage(message);
+                //writer.WriteMessage(values);
             }
         }
 
@@ -602,6 +632,13 @@ namespace WiiBalanceWalker
             var isChecked = ((CheckBox)sender).Checked;
             Properties.Settings.Default.StartMinimized = isChecked;
             Properties.Settings.Default.Save();
+        }
+
+        private static Foot get_opposite_foot(Foot f)
+        {
+            if (f == Foot.Left) return Foot.Right;
+            if (f == Foot.Right) return Foot.Left;
+            return Foot.None;
         }
     }
 }

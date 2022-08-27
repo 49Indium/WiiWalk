@@ -7,7 +7,7 @@ namespace WiiBalanceWalker
         StreamWriter file = new StreamWriter("test.txt", append: true);
         public DataWriter(string filePath)
         {
-            
+            file.WriteLine("Started");
         }
 
 
