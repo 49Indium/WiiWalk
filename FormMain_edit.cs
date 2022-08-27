@@ -15,6 +15,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using WiimoteLib;
 
 namespace WiiBalanceWalker
@@ -38,6 +39,11 @@ namespace WiiBalanceWalker
         public const double turningNullZonePercentage = 15.0;
         public const double tiltSpeed = 1.2;
         public const double tiltMax = 7.0;
+        public const double turningNullZonePercentageMoving = 20.0;
+        public const double tiltSpeedMoving = 1.35;
+        public const double tiltMaxMoving = 15.0;
+
+        public const int maxAverageCount = 12;
 
         ActionList actionList = new ActionList();
         Wiimote wiiDevice = new Wiimote();
@@ -62,6 +68,10 @@ namespace WiiBalanceWalker
         bool isSprinting = false;
         bool isJumping = false;
         bool wasOnBalanceBoard = false;
+
+        Queue<double> leftRightCentering = new Queue<double>();
+        double leftRightAverage = 0;
+
 
         bool setCenterOffset = false;
         bool resetCenterOffsetPossible = false;
@@ -504,7 +514,7 @@ namespace WiiBalanceWalker
                     {
                         actionList.Forward.Start();
                         BalanceWalker.FormMain.consoleBoxWriteLine("They be walking");
-                        if (secondsSinceLastWalk < walkContinuationTime) BalanceWalker.FormMain.consoleBoxWriteLine("(They still be walking");
+                        if (secondsSinceLastWalk < walkContinuationTime) BalanceWalker.FormMain.consoleBoxWriteLine("They still be walking");
                         isWalking = true;
                     }
                     else if (isWalking && seconsdSinceLastFootSwitch >= walkEndTime && !isJumping)
@@ -522,8 +532,27 @@ namespace WiiBalanceWalker
 
                 if (turningOn)
                 {
-                    int turningRate = turning_movement_scale(brX);
-                    actionList.Left.changeAmount(turningRate);
+                    brX = !float.IsNaN(brX) ? brX : 50;
+                    leftRightCentering.Enqueue(brX);
+                    leftRightAverage += brX;
+                    if (leftRightCentering.Count > maxAverageCount)
+                    {
+                        leftRightAverage -= leftRightCentering.Dequeue();
+                    }
+                    
+                        BalanceWalker.FormMain.consoleBoxWriteLine((leftRightAverage / leftRightCentering.Count).ToString());
+
+
+                    int turnPercentage = 0;
+                    if (isWalking || isSprinting)
+                    {
+                        turnPercentage = turning_movement_scale(leftRightAverage / leftRightCentering.Count, tiltMaxMoving, tiltSpeedMoving, turningNullZonePercentageMoving);
+                    }
+                    else
+                    {
+                        turnPercentage = turning_movement_scale(brX, tiltMax, tiltSpeed, turningNullZonePercentage);
+                    }
+                    actionList.Left.changeAmount(turnPercentage);
                     //TODO run only once
                     actionList.Left.Start();
                 }
@@ -730,15 +759,15 @@ namespace WiiBalanceWalker
             return Foot.None;
         }
 
-        private static int turning_movement_scale(double tilt)
+        private static int turning_movement_scale(double tilt, double max, double speed, double deadZone)
         {
-            if (50.0 + turningNullZonePercentage < tilt)
+            if (50.0 + deadZone < tilt)
             {
-                return (int)(tiltMax*2.0*(1.0 / (1 + Math.Pow(tiltSpeed, (50.0-tilt + turningNullZonePercentage))) - 0.5));
+                return (int)(max * 2.0 * (1.0 / (1 + Math.Pow(speed, (50.0 - tilt + deadZone))) - 0.5));
             }
-            else if (50.0 - turningNullZonePercentage > tilt)
+            else if (50.0 - deadZone > tilt)
             {
-                return (int)(tiltMax*2.0*(1.0 / (1.0 + Math.Pow(tiltSpeed, (50.0-tilt - turningNullZonePercentage))) - 0.5));
+                return (int)(max * 2.0 * (1.0 / (1.0 + Math.Pow(speed, (50.0 - tilt - deadZone))) - 0.5));
             }
             else
             {
