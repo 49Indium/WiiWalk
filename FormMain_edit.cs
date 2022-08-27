@@ -33,7 +33,10 @@ namespace WiiBalanceWalker
 
         DataWriter writer = new DataWriter("test.txt");
         DateTime jumpTime = DateTime.UtcNow;
-        DateTime walkTime = DateTime.UtcNow;
+        // The last change from left to right
+        DateTime latFootSwitchTime = DateTime.UtcNow;
+        // The last change in any state (including none)
+        DateTime lastFootChangeStateTime = DateTime.UtcNow;
 
         enum Foot
         {
@@ -452,21 +455,29 @@ namespace WiiBalanceWalker
             {
 
                 // Up foot should be opposite to down foor
-                Foot currentUpFoot = Foot.None;
-                if (sendLeft) currentUpFoot = Foot.Right;
-                if (sendRight) currentUpFoot = Foot.Left;
-                if (currentUpFoot != Foot.None && currentUpFoot == lastFoot && DateTime.UtcNow.Subtract(walkTime).Seconds < maxWalkTime)
+                Foot currentFoot = Foot.None;
+                if (sendLeft) currentFoot = Foot.Left;
+                if (sendRight) currentFoot = Foot.Right;
+
+                bool alternateFoot = (currentFoot != Foot.None && currentFoot == get_opposite_foot(lastFoot));
+                bool withinWalkingTime = DateTime.UtcNow.Subtract(latFootSwitchTime).Seconds < maxWalkTime;
+
+                if (alternateFoot && withinWalkingTime && !isWalking)
                 {
                     actionList.Forward.Start();
-                    BalanceWalker.FormMain.consoleBoxWriteLine("Walks");
+                    BalanceWalker.FormMain.consoleBoxWriteLine("He Walks");
+                    isWalking = true;
                 }
-                if (DateTime.UtcNow.Subtract(walkTime).Seconds > maxWalkTime)
+                else if (isWalking && !withinWalkingTime)
                 {
                     actionList.Forward.Stop();
-                    BalanceWalker.FormMain.consoleBoxWriteLine("Stop Walks");
+                    BalanceWalker.FormMain.consoleBoxWriteLine("He Stop");
+                    isWalking = false;
                 }
-                if (currentUpFoot != Foot.None && currentUpFoot == lastFoot) walkTime = DateTime.UtcNow;
-                lastFoot = get_opposite_foot(currentUpFoot);
+
+                if (alternateFoot) latFootSwitchTime = DateTime.UtcNow;
+                if (currentFoot != lastFoot) lastFootChangeStateTime = DateTime.UtcNow;
+                lastFoot = currentFoot;
 
                 double joyX = 0, joyY = 0;
 
