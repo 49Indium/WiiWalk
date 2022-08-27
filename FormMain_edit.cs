@@ -32,6 +32,7 @@ namespace WiiBalanceWalker
         public const bool walkingOn = true;
         public const bool sprintingOn = true;
         public const bool turningOn = true;
+        public const bool turningVerticalOn = true;
         public const bool jumpingOn = true;
         public const double turningNullZonePercentage = 15.0;
         public const double tiltSpeed = 1.2;
@@ -39,6 +40,12 @@ namespace WiiBalanceWalker
         public const double turningNullZonePercentageMoving = 20.0;
         public const double tiltSpeedMoving = 1.35;
         public const double tiltMaxMoving = 15.0;
+        public const double turningNullZonePercentageVertical = 20.0;
+        public const double tiltSpeedVertical = 1.1;
+        public const double tiltMaxVertical = 5.0;
+        public const double turningNullZonePercentageVerticalMoving = 20.0;
+        public const double tiltSpeedVerticalMoving = 1.1;
+        public const double tiltMaxVerticalMoving = 5.0;
 
         public const int maxAverageCount = 12;
 
@@ -420,54 +427,6 @@ namespace WiiBalanceWalker
             else if (brY < (float)(50 - numericUpDown_TMFB.Value)) sendModifier = true;
             else if (brY > (float)(50 + numericUpDown_TMFB.Value)) sendModifier = true;
 
-            // Detect jump but use a time limit to stop it being active while off the board.
-
-            if (owWeight < 1f)
-            {
-                if (DateTime.UtcNow.Subtract(jumpTime).Seconds < maxJumpLength) sendJump = true;
-            }
-            else
-            {
-                jumpTime = DateTime.UtcNow;
-            }
-
-            // Check for diagonal pressure only when no other movement actions are active.
-
-            if (!sendLeft && !sendRight && !sendForward && !sendBackward && brDF > 15)
-            {
-                if (brDL > brDR) sendDiagonalLeft = true;
-                else sendDiagonalRight = true;
-            }
-
-            // Display actions.
-
-            label_Status.Text = "Result: ";
-
-            if (sendForward) label_Status.Text += "Forward";
-            if (sendLeft) label_Status.Text += "Left";
-            if (sendBackward) label_Status.Text += "Backward";
-            if (sendRight) label_Status.Text += "Right";
-            if (sendModifier) label_Status.Text += " + Modifier";
-            if (sendJump) label_Status.Text += "Jump";
-            if (sendDiagonalLeft) label_Status.Text += "Diagonal Left";
-            if (sendDiagonalRight) label_Status.Text += "Diagonal Right";
-
-            if (checkBox_DisableActions.Checked) label_Status.Text += " ( DISABLED )";
-
-            // Send actions.
-
-            if (!checkBox_DisableActions.Checked)
-            {
-                if (sendLeft) actionList.Left.Start(); else actionList.Left.Stop();
-                if (sendRight) actionList.Right.Start(); else actionList.Right.Stop();
-                if (sendForward) actionList.Forward.Start(); else actionList.Forward.Stop();
-                if (sendBackward) actionList.Backward.Start(); else actionList.Backward.Stop();
-                if (sendModifier) actionList.Modifier.Start(); else actionList.Modifier.Stop();
-                if (sendJump) actionList.Jump.Start(); else actionList.Jump.Stop();
-                if (sendDiagonalLeft) actionList.DiagonalLeft.Start(); else actionList.DiagonalLeft.Stop();
-                if (sendDiagonalRight) actionList.DiagonalRight.Start(); else actionList.DiagonalRight.Stop();
-            }
-
             if (walkingOn)
             {
                 // Up foot should be opposite to down foor
@@ -529,8 +488,6 @@ namespace WiiBalanceWalker
                     leftRightAverage -= leftRightCentering.Dequeue();
                 }
 
-                BalanceWalker.FormMain.consoleBoxWriteLine((leftRightAverage / leftRightCentering.Count).ToString());
-
 
                 int turnPercentage = 0;
                 if (isWalking || isSprinting)
@@ -578,6 +535,24 @@ namespace WiiBalanceWalker
                 wasOnBalanceBoard = !offBalanceBoard;
 
             }
+
+            
+
+            // Display actions.
+
+            label_Status.Text = "Result: ";
+
+            if (sendForward) label_Status.Text += "Forward";
+            if (sendLeft) label_Status.Text += "Left";
+            if (sendBackward) label_Status.Text += "Backward";
+            if (sendRight) label_Status.Text += "Right";
+            if (sendModifier) label_Status.Text += " + Modifier";
+            if (sendJump) label_Status.Text += "Jump";
+            if (sendDiagonalLeft) label_Status.Text += "Diagonal Left";
+            if (sendDiagonalRight) label_Status.Text += "Diagonal Right";
+            if (isWalking) label_Status.Text += " & Walking";
+            if (isSprinting) label_Status.Text += " & Sprinting";
+            if (isJumping) label_Status.Text += " & Jumping";
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
