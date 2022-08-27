@@ -169,7 +169,7 @@ namespace WiiBalanceWalker
 
         private void button_ResetDefaults_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.Reset();
+            //Properties.Settings.Default.Reset();
             this.Close();
         }
 
