@@ -28,9 +28,12 @@ namespace WiiBalanceWalker
         public const double maxJumpLength = 1.0;
         public const double walkStartTime = 0.5;
         public const double walkEndTime = 0.3;
+        public const double sprintStartTime = 0.18;
+        public const double sprintEndTime = 0.18;
         public const double walkContinuationTime = 1.2;
-        public const bool walkingOn = false;
-        public const bool turningOn = false;
+        public const bool walkingOn = true;
+        public const bool sprintingOn = true;
+        public const bool turningOn = true;
         public const bool jumpingOn = true;
         public const double turningNullZonePercentage = 10;
 
@@ -44,6 +47,7 @@ namespace WiiBalanceWalker
         // The last change in any state (including none)
         DateTime lastFootChangeStateTime = DateTime.UtcNow;
         DateTime lastWalkTime = DateTime.UtcNow;
+        DateTime lastSprintTime = DateTime.UtcNow;
 
         DateTime jumpTime = DateTime.UtcNow;
 
@@ -486,7 +490,7 @@ namespace WiiBalanceWalker
                         if (secondsSinceLastWalk < walkContinuationTime) BalanceWalker.FormMain.consoleBoxWriteLine("(continuation)");
                         isWalking = true;
                     }
-                    else if (isWalking && seconsdSinceLastFootSwitch >= walkEndTime)
+                    else if (isWalking && seconsdSinceLastFootSwitch >= walkEndTime && !isJumping)
                     {
                         actionList.Forward.Stop();
                         BalanceWalker.FormMain.consoleBoxWriteLine("He Stop");
@@ -497,6 +501,18 @@ namespace WiiBalanceWalker
                     if (alternateFoot) lastFootSwitchTime = now;
                     if (currentFoot != lastFoot) lastFootChangeStateTime = now;
                     if (currentFoot != Foot.None) lastFoot = currentFoot;
+
+                    if (sprintingOn)
+                    {
+                        if (seconsdSinceLastFootSwitch < sprintStartTime)
+                        {
+                            actionList.Modifier.Start();
+                        }
+                        else
+                        {
+                            actionList.Modifier.Stop();
+                        }
+                    }
                 }
 
                 if (turningOn)
@@ -545,7 +561,6 @@ namespace WiiBalanceWalker
                         actionList.Jump.Stop();
                         BalanceWalker.FormMain.consoleBoxWriteLine("Land");
                         isJumping = false;
-
                     }
 
                     if (!offBalanceBoard) lastGroundTime = now;
