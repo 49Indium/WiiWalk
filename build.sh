@@ -21,7 +21,7 @@ echo 'Building'
 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe' ./WiiBalanceWalker.sln
 
 echo 'Done!'
-read -p "Do you want to run the program? Y/N" run
-if [[ $run == [yY] ]]; then
+read -p "Do you want to run the program? (Y)/N" run
+if [[ $run == [yY] || -z "$run" ]]; then
   WiiBalanceWalker/bin/x64/Debug/WiiBalanceWalker.exe
 fi
