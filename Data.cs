@@ -4,13 +4,21 @@ namespace WiiBalanceWalker
 {
     public class DataWriter
     {
+        StreamWriter file = new StreamWriter("test.txt", append: true);
+        public DataWriter(string filePath)
+        {
+            
+        }
+
+
+        public void WriteMessage(string message)
+        {
+            file.WriteLine(message);
+        }
         public void WriteData(int dataPoint)
         {
-            using (StreamWriter file = new StreamWriter("test.txt", append: true))
-            {
 
-                file.WriteLine(dataPoint.ToString());
-            }
+            file.WriteLine(dataPoint.ToString());
         }
     }
 }

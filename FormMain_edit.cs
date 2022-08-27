@@ -28,7 +28,7 @@ namespace WiiBalanceWalker
         ActionList actionList = new ActionList();
         Wiimote wiiDevice = new Wiimote();
 
-        DataWriter writer = new DataWriter();
+        DataWriter writer = new DataWriter("test.txt");
         DateTime jumpTime = DateTime.UtcNow;
 
         bool setCenterOffset = false;
@@ -474,7 +474,8 @@ namespace WiiBalanceWalker
                     BalanceWalker.FormMain.consoleBoxWriteLine(values);
                 }
                 // VJoyFeeder.Setjoystick((int)joyX, (int)joyY, (int)(rwTopLeft * 100), (int)(rwTopRight * 100), (int)(rwBottomLeft * 100), (int)(rwBottomRight * 100), aButton);
-                writer.WriteData((int)joyX);
+                string message = " " + owWeight.ToString("0.0") + " " + owrBottomLeft.ToString("0.0") + " " + owrBottomRight.ToString("0.0") + " " + owrTopRight.ToString("0.0") + " " + owrTopLeft.ToString("0.0");
+                writer.WriteMessage(message);
             }
         }
 
@@ -488,11 +489,12 @@ namespace WiiBalanceWalker
             if (checkBox_EnableJoystick.Checked)
             {
                 // VJoyFeeder.Initialize((uint)VJoyIDUpDown.Value);
-                writer.WriteData(23);
+                writer.WriteMessage("Sending Input");
                 status = true;
             }
             else
             {
+                writer.WriteMessage("Input Off");
                 status = false;
             }
             checkBox_SendCGtoXY.Enabled = status;
