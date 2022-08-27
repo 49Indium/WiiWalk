@@ -25,7 +25,7 @@ namespace WiiBalanceWalker
 
         System.Timers.Timer infoUpdateTimer = new System.Timers.Timer() { Interval = 25, Enabled = false };
         System.Timers.Timer joyResetTimer = new System.Timers.Timer() { Interval = 240000, Enabled = false };
-        public const double maxJumpLength = 0.5;
+        public const double maxJumpLength = 1.2;
         public const double walkStartTime = 0.5;
         public const double walkEndTime = 0.3;
         public const double walkContinuationTime = 1.2;
@@ -38,12 +38,14 @@ namespace WiiBalanceWalker
         Wiimote wiiDevice = new Wiimote();
 
         DataWriter writer = new DataWriter("test.txt");
-        DateTime jumpTime = DateTime.UtcNow;
+        DateTime lastGroundTime = DateTime.UtcNow;
         // The last change from left to right
         DateTime lastFootSwitchTime = DateTime.UtcNow;
         // The last change in any state (including none)
         DateTime lastFootChangeStateTime = DateTime.UtcNow;
         DateTime lastWalkTime = DateTime.UtcNow;
+
+        DateTime jumpTime = DateTime.UtcNow;
 
         enum Foot
         {
@@ -53,6 +55,7 @@ namespace WiiBalanceWalker
         Foot lastFoot = Foot.None;
 
         bool isWalking = false;
+        bool isJumping = false;
 
         bool setCenterOffset = false;
         bool resetCenterOffsetPossible = false;
@@ -500,7 +503,6 @@ namespace WiiBalanceWalker
                     if (brX < 50.0 - turningNullZonePercentage)
                     {
                         actionList.Left.Start();
-                        BalanceWalker.FormMain.consoleBoxWriteLine("Move Left");
 
                     }
                     else
@@ -510,7 +512,6 @@ namespace WiiBalanceWalker
                     if (brX > 50.0 + turningNullZonePercentage)
                     {
                         actionList.Right.Start();
-                        BalanceWalker.FormMain.consoleBoxWriteLine("Move Right");
                     }
                     else
                     {
@@ -518,7 +519,31 @@ namespace WiiBalanceWalker
                     }
                 }
 
-                
+                if (jumpingOn)
+                {
+                    DateTime now = DateTime.UtcNow;
+                    if (owWeight < 1f)
+                    {
+                        double secondsSinceLastJump = (now - lastGroundTime).TotalMilliseconds / 1000;
+                        if (!isJumping && secondsSinceLastJump < maxJumpLength)
+                        {
+                            actionList.Jump.Start();
+                            BalanceWalker.FormMain.consoleBoxWriteLine("Jump");
+                            isJumping = true;
+                        }
+                        else if (secondsSinceLastJump >= maxJumpLength)
+                        {
+                            actionList.Jump.Stop();
+                            isJumping = false;
+                        }
+                    }
+                    else
+                    {
+                        if (isJumping) actionList.Jump.Stop();
+                        isJumping = false;
+                        lastGroundTime = now;
+                    }
+                }
 
                 double joyX = 0, joyY = 0;
 
