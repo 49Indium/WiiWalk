@@ -35,7 +35,9 @@ namespace WiiBalanceWalker
         public const bool sprintingOn = true;
         public const bool turningOn = true;
         public const bool jumpingOn = true;
-        public const double turningNullZonePercentage = 15;
+        public const double turningNullZonePercentage = 15.0;
+        public const double tiltSpeed = 1.2;
+        public const double tiltMax = 7.0;
 
         ActionList actionList = new ActionList();
         Wiimote wiiDevice = new Wiimote();
@@ -520,23 +522,10 @@ namespace WiiBalanceWalker
 
                 if (turningOn)
                 {
-                    if (brX < 50.0 - turningNullZonePercentage)
-                    {
-                        actionList.Left.Start();
-
-                    }
-                    else
-                    {
-                        actionList.Left.Stop();
-                    }
-                    if (brX > 50.0 + turningNullZonePercentage)
-                    {
-                        actionList.Right.Start();
-                    }
-                    else
-                    {
-                        actionList.Right.Stop();
-                    }
+                    int turningRate = turning_movement_scale(brX);
+                    actionList.Left.changeAmount(turningRate);
+                    //TODO run only once
+                    actionList.Left.Start();
                 }
 
                 if (jumpingOn)
@@ -739,6 +728,22 @@ namespace WiiBalanceWalker
             if (f == Foot.Left) return Foot.Right;
             if (f == Foot.Right) return Foot.Left;
             return Foot.None;
+        }
+
+        private static int turning_movement_scale(double tilt)
+        {
+            if (50.0 + turningNullZonePercentage < tilt)
+            {
+                return (int)(tiltMax*2.0*(1.0 / (1 + Math.Pow(tiltSpeed, (50.0-tilt + turningNullZonePercentage))) - 0.5));
+            }
+            else if (50.0 - turningNullZonePercentage > tilt)
+            {
+                return (int)(tiltMax*2.0*(1.0 / (1.0 + Math.Pow(tiltSpeed, (50.0-tilt - turningNullZonePercentage))) - 0.5));
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

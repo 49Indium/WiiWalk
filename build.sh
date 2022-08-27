@@ -13,6 +13,7 @@ echo 'Moving Files'
 cp -f FormMain_edit.cs WiiBalanceWalker/FormMain.cs
 cp -f WiiBalanceWalker_edit.csproj WiiBalanceWalker/WiiBalanceWalker.csproj
 cp -f FormMain.Designer_edit.cs WiiBalanceWalker/FormMain.Designer.cs
+cp -f ActionManager_edit.cs WiiBalanceWalker/ActionManager.cs
 
 cp -f Data.cs WiiBalanceWalker/Data.cs
 
