@@ -489,12 +489,12 @@ namespace WiiBalanceWalker
                         if (alternateFoot && !isSprinting && seconsdSinceLastFootSwitch < sprintStartTime)
                         {
                             actionList.Modifier.Start();
-                            BalanceWalker.FormMain.consoleBoxWriteLine("He Sprint " + seconsdSinceLastFootSwitch.ToString());
+                            BalanceWalker.FormMain.consoleBoxWriteLine("They be sprinting");
                             isSprinting = true;
                         }
                         else if (isSprinting && seconsdSinceLastFootSwitch >= sprintEndTime && !isJumping)
                         {
-                            BalanceWalker.FormMain.consoleBoxWriteLine("He Stop Sprint");
+                            BalanceWalker.FormMain.consoleBoxWriteLine("They be haulting (no sprinting)");
                             actionList.Modifier.Stop();
                             isSprinting = false;
                         }
@@ -503,14 +503,14 @@ namespace WiiBalanceWalker
                     if (alternateFoot && !isWalking && (seconsdSinceLastFootSwitch < walkStartTime || secondsSinceLastWalk < walkContinuationTime))
                     {
                         actionList.Forward.Start();
-                        BalanceWalker.FormMain.consoleBoxWriteLine("He Walks");
-                        if (secondsSinceLastWalk < walkContinuationTime) BalanceWalker.FormMain.consoleBoxWriteLine("(continuation)");
+                        BalanceWalker.FormMain.consoleBoxWriteLine("They be walking");
+                        if (secondsSinceLastWalk < walkContinuationTime) BalanceWalker.FormMain.consoleBoxWriteLine("(They still be walking");
                         isWalking = true;
                     }
                     else if (isWalking && seconsdSinceLastFootSwitch >= walkEndTime && !isJumping)
                     {
                         actionList.Forward.Stop();
-                        BalanceWalker.FormMain.consoleBoxWriteLine("He Stop");
+                        BalanceWalker.FormMain.consoleBoxWriteLine("They be stopped");
                         lastWalkTime = now;
                         isWalking = false;
                     }
@@ -538,7 +538,7 @@ namespace WiiBalanceWalker
                     if (!isJumping && wasOnBalanceBoard && offBalanceBoard)
                     {
                         actionList.Jump.Start();
-                        BalanceWalker.FormMain.consoleBoxWriteLine("Jump");
+                        BalanceWalker.FormMain.consoleBoxWriteLine("They be jumping");
                         isJumping = true;
                     }
                     // Flying
@@ -546,12 +546,12 @@ namespace WiiBalanceWalker
                     {
                         actionList.Jump.Stop();
                         isJumping = false;
-                        BalanceWalker.FormMain.consoleBoxWriteLine("Flying");
+                        BalanceWalker.FormMain.consoleBoxWriteLine("They be flying (how you do that?)");
                     }
                     else if (isJumping && !offBalanceBoard)
                     {
                         actionList.Jump.Stop();
-                        BalanceWalker.FormMain.consoleBoxWriteLine("Land");
+                        BalanceWalker.FormMain.consoleBoxWriteLine("They be landing");
                         isJumping = false;
                     }
 
