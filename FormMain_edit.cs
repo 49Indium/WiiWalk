@@ -34,16 +34,16 @@ namespace WiiBalanceWalker
         public const bool turningOn = true;
         public const bool turningVerticalOn = true;
         public const bool jumpingOn = true;
-        public const double turningNullZonePercentage = 15.0;
+        public const double turningNullZonePercentage = 13.0;
         public const double tiltSpeed = 1.2;
         public const double tiltMax = 7.0;
-        public const double turningNullZonePercentageMoving = 20.0;
+        public const double turningNullZonePercentageMoving = 18.0;
         public const double tiltSpeedMoving = 1.35;
         public const double tiltMaxMoving = 15.0;
-        public const double turningNullZonePercentageVertical = 12.0;
+        public const double turningNullZonePercentageVertical = 9.0;
         public const double tiltSpeedVertical = 1.1;
         public const double tiltMaxVertical = -5.0;
-        public const double turningNullZonePercentageVerticalMoving = 15.0;
+        public const double turningNullZonePercentageVerticalMoving = 12.0;
         public const double tiltSpeedVerticalMoving = 1.1;
         public const double tiltMaxVerticalMoving = -3.0;
 
