@@ -39,8 +39,6 @@ namespace WiiBalanceWalker
 
         ActionList actionList = new ActionList();
         Wiimote wiiDevice = new Wiimote();
-
-        DataWriter writer = new DataWriter("test.txt");
         DateTime lastGroundTime = DateTime.UtcNow;
         // The last change from left to right
         DateTime lastFootSwitchTime = DateTime.UtcNow;
@@ -610,7 +608,6 @@ namespace WiiBalanceWalker
                     BalanceWalker.FormMain.consoleBoxWriteLine(values);
                 }
                 // VJoyFeeder.Setjoystick((int)joyX, (int)joyY, (int)(rwTopLeft * 100), (int)(rwTopRight * 100), (int)(rwBottomLeft * 100), (int)(rwBottomRight * 100), aButton);
-                //writer.WriteMessage(values);
             }
         }
 
@@ -624,12 +621,10 @@ namespace WiiBalanceWalker
             if (checkBox_EnableJoystick.Checked)
             {
                 // VJoyFeeder.Initialize((uint)VJoyIDUpDown.Value);
-                writer.WriteMessage("Sending Input");
                 status = true;
             }
             else
             {
-                writer.WriteMessage("Input Off");
                 status = false;
             }
             checkBox_SendCGtoXY.Enabled = status;
