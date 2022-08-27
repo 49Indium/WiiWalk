@@ -40,14 +40,15 @@ namespace WiiBalanceWalker
         public const double turningNullZonePercentageMoving = 20.0;
         public const double tiltSpeedMoving = 1.35;
         public const double tiltMaxMoving = 15.0;
-        public const double turningNullZonePercentageVertical = 20.0;
+        public const double turningNullZonePercentageVertical = 12.0;
         public const double tiltSpeedVertical = 1.1;
-        public const double tiltMaxVertical = 5.0;
-        public const double turningNullZonePercentageVerticalMoving = 20.0;
+        public const double tiltMaxVertical = -5.0;
+        public const double turningNullZonePercentageVerticalMoving = 15.0;
         public const double tiltSpeedVerticalMoving = 1.1;
-        public const double tiltMaxVerticalMoving = 5.0;
+        public const double tiltMaxVerticalMoving = -3.0;
 
         public const int maxAverageCount = 12;
+        public const int maxAverageCountVertical = 15;
 
         ActionList actionList = new ActionList();
         Wiimote wiiDevice = new Wiimote();
@@ -75,6 +76,9 @@ namespace WiiBalanceWalker
 
         Queue<double> leftRightCentering = new Queue<double>();
         double leftRightAverage = 0;
+
+        Queue<double> upDownCentering = new Queue<double>();
+        double upDownAverage = 0;
 
 
         bool setCenterOffset = false;
@@ -501,6 +505,31 @@ namespace WiiBalanceWalker
                 actionList.Left.changeAmount(turnPercentage);
                 //TODO run only once
                 actionList.Left.Start();
+            }
+
+            if (turningVerticalOn)
+            {
+                brY = !float.IsNaN(brY) ? brY : 50;
+                upDownCentering.Enqueue(brY);
+                upDownAverage += brY;
+                if (upDownCentering.Count > maxAverageCountVertical)
+                {
+                    upDownAverage -= upDownCentering.Dequeue();
+                }
+
+
+                int turnPercentage = 0;
+                if (isWalking || isSprinting)
+                {
+                    turnPercentage = turning_movement_scale(upDownAverage / upDownCentering.Count, tiltMaxVerticalMoving, tiltSpeedVerticalMoving, turningNullZonePercentageVerticalMoving);
+                }
+                else
+                {
+                    turnPercentage = turning_movement_scale(brY, tiltMaxVertical, tiltSpeedVertical, turningNullZonePercentageVertical);
+                }
+                actionList.Backward.changeAmount(turnPercentage);
+                //TODO run only once
+                actionList.Backward.Start();
             }
 
             if (jumpingOn)
