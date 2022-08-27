@@ -22,12 +22,19 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
+            int width = 900;
+            int height = 600;
+            int padding = 3;
+            int titlePadding = 10;
+
+            int sec1Height = 50;
+            int sec2Height = 250;
+            int sec2_1Height = 200;
+            int sec2_2Height = 50;
+            int sec3Height = 300;
+
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.label_rwWT = new System.Windows.Forms.Label();
@@ -96,17 +103,14 @@
             this.comboBox_AB = new System.Windows.Forms.ComboBox();
             this.comboBox_AR = new System.Windows.Forms.ComboBox();
             this.comboBox_AL = new System.Windows.Forms.ComboBox();
-            this.checkBox_EnableJoystick = new System.Windows.Forms.CheckBox();
             this.consoleBox = new System.Windows.Forms.TextBox();
             this.checkBox_Send4LoadSensors = new System.Windows.Forms.CheckBox();
-            this.groupBox_vJoy_output = new System.Windows.Forms.GroupBox();
             this.checkBox_ShowValuesInConsole = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.VJoyIDUpDown = new System.Windows.Forms.NumericUpDown();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.checkBox_StartupAutoConnect = new System.Windows.Forms.CheckBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.startupOptions = new System.Windows.Forms.GroupBox();
+            this.options = new System.Windows.Forms.GroupBox();
             this.checkBox_StartMinimized = new System.Windows.Forms.CheckBox();
             this.checkBox_AutoTare = new System.Windows.Forms.CheckBox();
             this.groupBox_RawWeight.SuspendLayout();
@@ -128,12 +132,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_AF)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_AR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_AL)).BeginInit();
-            this.groupBox_vJoy_output.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.VJoyIDUpDown)).BeginInit();
-            this.startupOptions.SuspendLayout();
+            this.options.SuspendLayout();
             this.SuspendLayout();
             // 
-            // label_rwWT
+            // label_rwWT //TODO
             // 
             this.label_rwWT.AutoSize = true;
             this.label_rwWT.Location = new System.Drawing.Point(63, 113);
@@ -144,15 +146,15 @@
             // 
             // button_Connect
             // 
-            this.button_Connect.Location = new System.Drawing.Point(174, 82);
+            this.button_Connect.Location = new System.Drawing.Point((int)(width / 6) + padding, titlePadding + padding);
             this.button_Connect.Name = "button_Connect";
-            this.button_Connect.Size = new System.Drawing.Size(183, 48);
+            this.button_Connect.Size = new System.Drawing.Size((int)((width - 2 * padding) / 6) - 2 * padding, sec1Height - 4 * padding - titlePadding);
             this.button_Connect.TabIndex = 0;
             this.button_Connect.Text = "Connect to Wii Balance Board";
             this.button_Connect.UseVisualStyleBackColor = true;
             this.button_Connect.Click += new System.EventHandler(this.button_Connect_Click);
             // 
-            // label_brX
+            // label_brX //TODO
             // 
             this.label_brX.AutoSize = true;
             this.label_brX.Location = new System.Drawing.Point(25, 32);
@@ -161,7 +163,7 @@
             this.label_brX.TabIndex = 0;
             this.label_brX.Text = "X";
             // 
-            // label_brY
+            // label_brY //TODO
             // 
             this.label_brY.AutoSize = true;
             this.label_brY.Location = new System.Drawing.Point(101, 32);
@@ -170,7 +172,7 @@
             this.label_brY.TabIndex = 0;
             this.label_brY.Text = "Y";
             // 
-            // label_brDL
+            // label_brDL //TODO
             // 
             this.label_brDL.AutoSize = true;
             this.label_brDL.Location = new System.Drawing.Point(25, 76);
@@ -179,7 +181,7 @@
             this.label_brDL.TabIndex = 0;
             this.label_brDL.Text = "DL";
             // 
-            // label_brDR
+            // label_brDR //TODO
             // 
             this.label_brDR.AutoSize = true;
             this.label_brDR.Location = new System.Drawing.Point(101, 76);
@@ -195,14 +197,14 @@
             this.groupBox_RawWeight.Controls.Add(this.label_rwTR);
             this.groupBox_RawWeight.Controls.Add(this.label_rwTL);
             this.groupBox_RawWeight.Controls.Add(this.label_rwWT);
-            this.groupBox_RawWeight.Location = new System.Drawing.Point(12, 12);
+            this.groupBox_RawWeight.Location = new System.Drawing.Point(padding, sec1Height + padding);
             this.groupBox_RawWeight.Name = "groupBox_RawWeight";
-            this.groupBox_RawWeight.Size = new System.Drawing.Size(150, 139);
+            this.groupBox_RawWeight.Size = new System.Drawing.Size((int)((width - 2 * padding) / 6) - padding, sec2_1Height - 2 * padding);
             this.groupBox_RawWeight.TabIndex = 3;
             this.groupBox_RawWeight.TabStop = false;
             this.groupBox_RawWeight.Text = "Raw Weight ";
             // 
-            // label_rwBR
+            // label_rwBR //TODO
             // 
             this.label_rwBR.AutoSize = true;
             this.label_rwBR.Location = new System.Drawing.Point(101, 76);
@@ -211,7 +213,7 @@
             this.label_rwBR.TabIndex = 0;
             this.label_rwBR.Text = "BR";
             // 
-            // label_rwBL
+            // label_rwBL //TODO
             // 
             this.label_rwBL.AutoSize = true;
             this.label_rwBL.Location = new System.Drawing.Point(25, 76);
@@ -220,7 +222,7 @@
             this.label_rwBL.TabIndex = 0;
             this.label_rwBL.Text = "BL";
             // 
-            // label_rwTR
+            // label_rwTR //TODO
             // 
             this.label_rwTR.AutoSize = true;
             this.label_rwTR.Location = new System.Drawing.Point(101, 32);
@@ -229,7 +231,7 @@
             this.label_rwTR.TabIndex = 0;
             this.label_rwTR.Text = "TR";
             // 
-            // label_rwTL
+            // label_rwTL //TODO
             // 
             this.label_rwTL.AutoSize = true;
             this.label_rwTL.Location = new System.Drawing.Point(25, 32);
@@ -245,14 +247,14 @@
             this.groupBox_OffsetWeight.Controls.Add(this.label_owTR);
             this.groupBox_OffsetWeight.Controls.Add(this.label_owBL);
             this.groupBox_OffsetWeight.Controls.Add(this.label_owBR);
-            this.groupBox_OffsetWeight.Location = new System.Drawing.Point(168, 12);
+            this.groupBox_OffsetWeight.Location = new System.Drawing.Point((int)(width / 6) + padding, sec1Height + padding);
             this.groupBox_OffsetWeight.Name = "groupBox_OffsetWeight";
-            this.groupBox_OffsetWeight.Size = new System.Drawing.Size(150, 139);
+            this.groupBox_OffsetWeight.Size = new System.Drawing.Size((int)((width - 2 * padding) / 6) - padding, sec2_1Height - 2 * padding);
             this.groupBox_OffsetWeight.TabIndex = 4;
             this.groupBox_OffsetWeight.TabStop = false;
             this.groupBox_OffsetWeight.Text = "Offset Weight";
             // 
-            // label_owWT
+            // label_owWT // TODO
             // 
             this.label_owWT.AutoSize = true;
             this.label_owWT.Location = new System.Drawing.Point(63, 113);
@@ -261,7 +263,7 @@
             this.label_owWT.TabIndex = 1;
             this.label_owWT.Text = "WT";
             // 
-            // label_owTL
+            // label_owTL //TODO
             // 
             this.label_owTL.AutoSize = true;
             this.label_owTL.Location = new System.Drawing.Point(25, 32);
@@ -270,7 +272,7 @@
             this.label_owTL.TabIndex = 0;
             this.label_owTL.Text = "TL";
             // 
-            // label_owTR
+            // label_owTR //TODO
             // 
             this.label_owTR.AutoSize = true;
             this.label_owTR.Location = new System.Drawing.Point(101, 32);
@@ -279,7 +281,7 @@
             this.label_owTR.TabIndex = 0;
             this.label_owTR.Text = "TR";
             // 
-            // label_owBL
+            // label_owBL //TODO
             // 
             this.label_owBL.AutoSize = true;
             this.label_owBL.Location = new System.Drawing.Point(25, 76);
@@ -288,7 +290,7 @@
             this.label_owBL.TabIndex = 0;
             this.label_owBL.Text = "BL";
             // 
-            // label_owBR
+            // label_owBR //TODO
             // 
             this.label_owBR.AutoSize = true;
             this.label_owBR.Location = new System.Drawing.Point(101, 76);
@@ -303,14 +305,14 @@
             this.groupBox_OffsetWeightRatio.Controls.Add(this.label_owrTR);
             this.groupBox_OffsetWeightRatio.Controls.Add(this.label_owrBL);
             this.groupBox_OffsetWeightRatio.Controls.Add(this.label_owrBR);
-            this.groupBox_OffsetWeightRatio.Location = new System.Drawing.Point(324, 12);
+            this.groupBox_OffsetWeightRatio.Location = new System.Drawing.Point((int)(2 * width / 6) + padding, sec1Height + padding);
             this.groupBox_OffsetWeightRatio.Name = "groupBox_OffsetWeightRatio";
-            this.groupBox_OffsetWeightRatio.Size = new System.Drawing.Size(150, 139);
+            this.groupBox_OffsetWeightRatio.Size = new System.Drawing.Size((int)((width - 2 * padding) / 6) - padding, sec2_1Height - 2 * padding);
             this.groupBox_OffsetWeightRatio.TabIndex = 4;
             this.groupBox_OffsetWeightRatio.TabStop = false;
             this.groupBox_OffsetWeightRatio.Text = "Offset Weight Ratio";
             // 
-            // label_owrTL
+            // label_owrTL //TODO
             // 
             this.label_owrTL.AutoSize = true;
             this.label_owrTL.Location = new System.Drawing.Point(25, 32);
@@ -319,7 +321,7 @@
             this.label_owrTL.TabIndex = 0;
             this.label_owrTL.Text = "TL";
             // 
-            // label_owrTR
+            // label_owrTR //TODO
             // 
             this.label_owrTR.AutoSize = true;
             this.label_owrTR.Location = new System.Drawing.Point(101, 32);
@@ -328,7 +330,7 @@
             this.label_owrTR.TabIndex = 0;
             this.label_owrTR.Text = "TR";
             // 
-            // label_owrBL
+            // label_owrBL //TODO
             // 
             this.label_owrBL.AutoSize = true;
             this.label_owrBL.Location = new System.Drawing.Point(25, 76);
@@ -337,7 +339,7 @@
             this.label_owrBL.TabIndex = 0;
             this.label_owrBL.Text = "BL";
             // 
-            // label_owrBR
+            // label_owrBR //TODO
             // 
             this.label_owrBR.AutoSize = true;
             this.label_owrBR.Location = new System.Drawing.Point(101, 76);
@@ -353,9 +355,9 @@
             this.groupBox_General.Controls.Add(this.button_ResetDefaults);
             this.groupBox_General.Controls.Add(this.button_BluetoothAddDevice);
             this.groupBox_General.Controls.Add(this.button_Connect);
-            this.groupBox_General.Location = new System.Drawing.Point(12, 157);
+            this.groupBox_General.Location = new System.Drawing.Point(0 + padding, 0 + padding);
             this.groupBox_General.Name = "groupBox_General";
-            this.groupBox_General.Size = new System.Drawing.Size(373, 136);
+            this.groupBox_General.Size = new System.Drawing.Size(width - 2 * padding, sec1Height - 2 * padding);
             this.groupBox_General.TabIndex = 0;
             this.groupBox_General.TabStop = false;
             this.groupBox_General.Text = "General";
@@ -363,22 +365,21 @@
             // zeroout
             // 
             this.zeroout.Enabled = false;
-            this.zeroout.Location = new System.Drawing.Point(15, 28);
+            this.zeroout.Location = new System.Drawing.Point((int)(2 * width / 6) + padding, titlePadding + padding);
             this.zeroout.Name = "zeroout";
-            this.zeroout.Size = new System.Drawing.Size(138, 26);
+            this.zeroout.Size = new System.Drawing.Size((int)((width - 2 * padding) / 6) - 2 * padding, sec1Height - 4 * padding - titlePadding);
             this.zeroout.TabIndex = 7;
             this.zeroout.Text = "Tare Balance Board";
-            this.toolTip1.SetToolTip(this.zeroout, "Press this button while no weight is on the balance board, to reset all current r" +
-        "aw weight values to zero");
+            this.toolTip1.SetToolTip(this.zeroout, "Press this button while no weight is on the balance board, to reset all current raw weight values to zero");
             this.zeroout.UseVisualStyleBackColor = true;
             this.zeroout.Click += new System.EventHandler(this.zeroout_Click);
             // 
             // button_SetCenterOffset
             // 
             this.button_SetCenterOffset.Enabled = false;
-            this.button_SetCenterOffset.Location = new System.Drawing.Point(15, 59);
+            this.button_SetCenterOffset.Location = new System.Drawing.Point((int)(3 * width / 6) + padding, titlePadding + padding);
             this.button_SetCenterOffset.Name = "button_SetCenterOffset";
-            this.button_SetCenterOffset.Size = new System.Drawing.Size(138, 34);
+            this.button_SetCenterOffset.Size = new System.Drawing.Size((int)((width - 2 * padding) / 6) - 2 * padding, sec1Height - 4 * padding - titlePadding);
             this.button_SetCenterOffset.TabIndex = 2;
             this.button_SetCenterOffset.Text = "Set current balance as center";
             this.toolTip1.SetToolTip(this.button_SetCenterOffset, "While standing or sitting on the balance board, click this button to set your cur" +
@@ -388,38 +389,23 @@
             // 
             // button_ResetDefaults
             // 
-            this.button_ResetDefaults.Location = new System.Drawing.Point(15, 96);
+            this.button_ResetDefaults.Location = new System.Drawing.Point((int)(4 * width / 6) + padding, titlePadding + padding);
             this.button_ResetDefaults.Name = "button_ResetDefaults";
-            this.button_ResetDefaults.Size = new System.Drawing.Size(138, 34);
+            this.button_ResetDefaults.Size = new System.Drawing.Size((int)((width - 2 * padding) / 6) - 2 * padding, sec1Height - 4 * padding - titlePadding);
             this.button_ResetDefaults.TabIndex = 3;
-            this.button_ResetDefaults.Text = "Load default settings and exit";
+            this.button_ResetDefaults.Text = "Exit";
             this.button_ResetDefaults.UseVisualStyleBackColor = true;
             this.button_ResetDefaults.Click += new System.EventHandler(this.button_ResetDefaults_Click);
             // 
             // button_BluetoothAddDevice
             // 
-            this.button_BluetoothAddDevice.Location = new System.Drawing.Point(174, 29);
+            this.button_BluetoothAddDevice.Location = new System.Drawing.Point(0 + padding, 0 + padding + titlePadding);
             this.button_BluetoothAddDevice.Name = "button_BluetoothAddDevice";
-            this.button_BluetoothAddDevice.Size = new System.Drawing.Size(183, 46);
+            this.button_BluetoothAddDevice.Size = new System.Drawing.Size((int)((width - 2 * padding) / 6) - 2 * padding, sec1Height - 4 * padding - titlePadding);
             this.button_BluetoothAddDevice.TabIndex = 1;
             this.button_BluetoothAddDevice.Text = "Add/Remove bluetooth Wii device";
             this.button_BluetoothAddDevice.UseVisualStyleBackColor = true;
             this.button_BluetoothAddDevice.Click += new System.EventHandler(this.button_BluetoothAddDevice_Click);
-            // 
-            // checkBox_SendCGtoXY
-            // 
-            this.checkBox_SendCGtoXY.AutoSize = true;
-            this.checkBox_SendCGtoXY.Checked = true;
-            this.checkBox_SendCGtoXY.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_SendCGtoXY.Location = new System.Drawing.Point(6, 19);
-            this.checkBox_SendCGtoXY.Name = "checkBox_SendCGtoXY";
-            this.checkBox_SendCGtoXY.Size = new System.Drawing.Size(128, 17);
-            this.checkBox_SendCGtoXY.TabIndex = 5;
-            this.checkBox_SendCGtoXY.Text = "Send CG to X/Y axes";
-            this.toolTip1.SetToolTip(this.checkBox_SendCGtoXY, "Send your center of gravity (balance point) as an X/Y input, to the virtual joyst" +
-        "ick device.");
-            this.checkBox_SendCGtoXY.UseVisualStyleBackColor = true;
-            this.checkBox_SendCGtoXY.CheckedChanged += new System.EventHandler(this.checkBox_SendCGtoXY_CheckedChanged);
             // 
             // groupBox_BalanceRatio
             // 
@@ -428,14 +414,14 @@
             this.groupBox_BalanceRatio.Controls.Add(this.label_brDR);
             this.groupBox_BalanceRatio.Controls.Add(this.label_brDL);
             this.groupBox_BalanceRatio.Controls.Add(this.label_brY);
-            this.groupBox_BalanceRatio.Location = new System.Drawing.Point(480, 12);
+            this.groupBox_BalanceRatio.Location = new System.Drawing.Point((int)(3 * width / 6) + padding, sec1Height + padding);
             this.groupBox_BalanceRatio.Name = "groupBox_BalanceRatio";
-            this.groupBox_BalanceRatio.Size = new System.Drawing.Size(150, 139);
+            this.groupBox_BalanceRatio.Size = new System.Drawing.Size((int)((width - 2 * padding) / 6) - padding, sec2_1Height - 2 * padding);
             this.groupBox_BalanceRatio.TabIndex = 5;
             this.groupBox_BalanceRatio.TabStop = false;
             this.groupBox_BalanceRatio.Text = "Balance Ratio";
             // 
-            // label_brDF
+            // label_brDF //TODO
             // 
             this.label_brDF.AutoSize = true;
             this.label_brDF.Location = new System.Drawing.Point(65, 113);
@@ -444,7 +430,7 @@
             this.label_brDF.TabIndex = 0;
             this.label_brDF.Text = "DF";
             // 
-            // groupBox_BalanceRatioTriggers
+            // groupBox_Constants
             // 
             this.groupBox_BalanceRatioTriggers.Controls.Add(this.numericUpDown_TMFB);
             this.groupBox_BalanceRatioTriggers.Controls.Add(this.numericUpDown_TMLR);
@@ -454,14 +440,14 @@
             this.groupBox_BalanceRatioTriggers.Controls.Add(this.label_TMLR);
             this.groupBox_BalanceRatioTriggers.Controls.Add(this.label_TFB);
             this.groupBox_BalanceRatioTriggers.Controls.Add(this.label_TLR);
-            this.groupBox_BalanceRatioTriggers.Location = new System.Drawing.Point(18, 260);
-            this.groupBox_BalanceRatioTriggers.Name = "groupBox_BalanceRatioTriggers";
-            this.groupBox_BalanceRatioTriggers.Size = new System.Drawing.Size(239, 136);
+            this.groupBox_BalanceRatioTriggers.Location = new System.Drawing.Point((int)(width/3)+padding, sec1Height+sec2Height+padding);
+            this.groupBox_BalanceRatioTriggers.Name = "groupBox_Constants";
+            this.groupBox_BalanceRatioTriggers.Size = new System.Drawing.Size((int)(width/3)-2*padding, sec3Height-2*padding);
             this.groupBox_BalanceRatioTriggers.TabIndex = 1;
             this.groupBox_BalanceRatioTriggers.TabStop = false;
-            this.groupBox_BalanceRatioTriggers.Text = "Balance Ratio Triggers";
+            this.groupBox_BalanceRatioTriggers.Text = "Constants";
             // 
-            // numericUpDown_TMFB
+            // numericUpDown_TMFB //TODO
             // 
             this.numericUpDown_TMFB.Location = new System.Drawing.Point(178, 104);
             this.numericUpDown_TMFB.Maximum = new decimal(new int[] {
@@ -484,7 +470,7 @@
             0});
             this.numericUpDown_TMFB.ValueChanged += new System.EventHandler(this.numericUpDown_TMFB_ValueChanged);
             // 
-            // numericUpDown_TMLR
+            // numericUpDown_TMLR //TODO
             // 
             this.numericUpDown_TMLR.Location = new System.Drawing.Point(178, 78);
             this.numericUpDown_TMLR.Maximum = new decimal(new int[] {
@@ -592,16 +578,15 @@
             // label_Status
             // 
             this.label_Status.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label_Status.Location = new System.Drawing.Point(12, 296);
+            this.label_Status.Location = new System.Drawing.Point(padding, sec1Height + sec2_1Height + padding);
             this.label_Status.Name = "label_Status";
-            this.label_Status.Size = new System.Drawing.Size(618, 24);
+            this.label_Status.Size = new System.Drawing.Size((int)(2*width/3) - 2 * padding, sec2_2Height);
             this.label_Status.TabIndex = 4;
-            this.label_Status.Text = "STATUS";
+            this.label_Status.Text = "STATUS"; //TODO
             this.label_Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // groupBox_Actions
             // 
-            this.groupBox_Actions.Controls.Add(this.groupBox_BalanceRatioTriggers);
             this.groupBox_Actions.Controls.Add(this.checkBox_DisableActions);
             this.groupBox_Actions.Controls.Add(this.numericUpDown_ADR);
             this.groupBox_Actions.Controls.Add(this.numericUpDown_ADL);
@@ -627,14 +612,14 @@
             this.groupBox_Actions.Controls.Add(this.comboBox_AB);
             this.groupBox_Actions.Controls.Add(this.comboBox_AR);
             this.groupBox_Actions.Controls.Add(this.comboBox_AL);
-            this.groupBox_Actions.Location = new System.Drawing.Point(636, 12);
+            this.groupBox_Actions.Location = new System.Drawing.Point(padding, sec1Height + sec2Height + padding);
             this.groupBox_Actions.Name = "groupBox_Actions";
-            this.groupBox_Actions.Size = new System.Drawing.Size(296, 437);
+            this.groupBox_Actions.Size = new System.Drawing.Size((int)(width / 3) - 2 * padding, sec3Height-2*padding);
             this.groupBox_Actions.TabIndex = 2;
             this.groupBox_Actions.TabStop = false;
             this.groupBox_Actions.Text = "Actions";
             // 
-            // checkBox_DisableActions
+            // checkBox_DisableActions //TODO
             // 
             this.checkBox_DisableActions.AutoSize = true;
             this.checkBox_DisableActions.Location = new System.Drawing.Point(18, 407);
@@ -925,31 +910,18 @@
             this.comboBox_AL.Size = new System.Drawing.Size(125, 21);
             this.comboBox_AL.TabIndex = 2;
             // 
-            // checkBox_EnableJoystick
-            // 
-            this.checkBox_EnableJoystick.AutoSize = true;
-            this.checkBox_EnableJoystick.Location = new System.Drawing.Point(459, 455);
-            this.checkBox_EnableJoystick.Name = "checkBox_EnableJoystick";
-            this.checkBox_EnableJoystick.Size = new System.Drawing.Size(117, 17);
-            this.checkBox_EnableJoystick.TabIndex = 1;
-            this.checkBox_EnableJoystick.Tag = "";
-            this.checkBox_EnableJoystick.Text = "Enable vJoy output";
-            this.toolTip1.SetToolTip(this.checkBox_EnableJoystick, "Sends the data to vJoy driver");
-            this.checkBox_EnableJoystick.UseVisualStyleBackColor = true;
-            this.checkBox_EnableJoystick.CheckedChanged += new System.EventHandler(this.checkBox_EnableJoystick_CheckedChanged);
-            // 
             // consoleBox
             // 
-            this.consoleBox.Location = new System.Drawing.Point(12, 323);
+            this.consoleBox.Location = new System.Drawing.Point((int)(2*width/3)+padding, sec1Height+padding);
             this.consoleBox.Multiline = true;
             this.consoleBox.Name = "consoleBox";
             this.consoleBox.ReadOnly = true;
             this.consoleBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.consoleBox.Size = new System.Drawing.Size(435, 198);
+            this.consoleBox.Size = new System.Drawing.Size((int)(width/3)-2*padding, sec2Height-2*padding);
             this.consoleBox.TabIndex = 7;
-            this.consoleBox.Text = "vJoy Console";
+            this.consoleBox.Text = "Console";
             // 
-            // checkBox_Send4LoadSensors
+            // checkBox_Send4LoadSensors //TODO
             // 
             this.checkBox_Send4LoadSensors.AutoSize = true;
             this.checkBox_Send4LoadSensors.Checked = true;
@@ -962,67 +934,6 @@
             this.toolTip1.SetToolTip(this.checkBox_Send4LoadSensors, resources.GetString("checkBox_Send4LoadSensors.ToolTip"));
             this.checkBox_Send4LoadSensors.UseVisualStyleBackColor = true;
             this.checkBox_Send4LoadSensors.CheckedChanged += new System.EventHandler(this.checkBox_Send4LoadSensors_CheckedChanged);
-            // 
-            // groupBox_vJoy_output
-            // 
-            this.groupBox_vJoy_output.Controls.Add(this.checkBox_ShowValuesInConsole);
-            this.groupBox_vJoy_output.Controls.Add(this.label1);
-            this.groupBox_vJoy_output.Controls.Add(this.VJoyIDUpDown);
-            this.groupBox_vJoy_output.Controls.Add(this.checkBox_Send4LoadSensors);
-            this.groupBox_vJoy_output.Controls.Add(this.checkBox_SendCGtoXY);
-            this.groupBox_vJoy_output.Location = new System.Drawing.Point(453, 326);
-            this.groupBox_vJoy_output.Name = "groupBox_vJoy_output";
-            this.groupBox_vJoy_output.Size = new System.Drawing.Size(177, 123);
-            this.groupBox_vJoy_output.TabIndex = 10;
-            this.groupBox_vJoy_output.TabStop = false;
-            this.groupBox_vJoy_output.Text = "vJoy output";
-            // 
-            // checkBox_ShowValuesInConsole
-            // 
-            this.checkBox_ShowValuesInConsole.AutoSize = true;
-            this.checkBox_ShowValuesInConsole.Location = new System.Drawing.Point(6, 65);
-            this.checkBox_ShowValuesInConsole.Name = "checkBox_ShowValuesInConsole";
-            this.checkBox_ShowValuesInConsole.Size = new System.Drawing.Size(138, 17);
-            this.checkBox_ShowValuesInConsole.TabIndex = 13;
-            this.checkBox_ShowValuesInConsole.Text = "Show values in console";
-            this.toolTip1.SetToolTip(this.checkBox_ShowValuesInConsole, "print the measured values to the vJoy Console");
-            this.checkBox_ShowValuesInConsole.UseVisualStyleBackColor = true;
-            this.checkBox_ShowValuesInConsole.CheckedChanged += new System.EventHandler(this.ShowValues_CheckedChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 97);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(84, 13);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "VJoy Device ID:";
-            this.toolTip1.SetToolTip(this.label1, "Leave this on 1, unless you\'re using multiple virtual joysticks, and would like t" +
-        "o change the enumeration for the wii balance board device.");
-            // 
-            // VJoyIDUpDown
-            // 
-            this.VJoyIDUpDown.Location = new System.Drawing.Point(88, 94);
-            this.VJoyIDUpDown.Maximum = new decimal(new int[] {
-            16,
-            0,
-            0,
-            0});
-            this.VJoyIDUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.VJoyIDUpDown.Name = "VJoyIDUpDown";
-            this.VJoyIDUpDown.Size = new System.Drawing.Size(35, 20);
-            this.VJoyIDUpDown.TabIndex = 11;
-            this.toolTip1.SetToolTip(this.VJoyIDUpDown, "Noramlly leave this on 1. Unless you have several virtual joystick devices config" +
-        "ured.");
-            this.VJoyIDUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             // 
             // checkBox_StartupAutoConnect
             // 
@@ -1037,17 +948,17 @@
             this.checkBox_StartupAutoConnect.UseVisualStyleBackColor = true;
             this.checkBox_StartupAutoConnect.CheckedChanged += new System.EventHandler(this.checkBox_StartupAutoConnect_CheckedChanged);
             // 
-            // startupOptions
+            // options
             // 
-            this.startupOptions.Controls.Add(this.checkBox_StartMinimized);
-            this.startupOptions.Controls.Add(this.checkBox_AutoTare);
-            this.startupOptions.Controls.Add(this.checkBox_StartupAutoConnect);
-            this.startupOptions.Location = new System.Drawing.Point(392, 157);
-            this.startupOptions.Name = "startupOptions";
-            this.startupOptions.Size = new System.Drawing.Size(238, 136);
-            this.startupOptions.TabIndex = 12;
-            this.startupOptions.TabStop = false;
-            this.startupOptions.Text = "Startup Options";
+            this.options.Controls.Add(this.checkBox_StartMinimized);
+            this.options.Controls.Add(this.checkBox_AutoTare);
+            this.options.Controls.Add(this.checkBox_StartupAutoConnect);
+            this.options.Location = new System.Drawing.Point((int)(2*width/3)+padding, sec1Height+sec2Height+padding);
+            this.options.Name = "options";
+            this.options.Size = new System.Drawing.Size((int)(width/3)-2*padding, sec3Height-2*padding);
+            this.options.TabIndex = 12;
+            this.options.TabStop = false;
+            this.options.Text = "Options";
             // 
             // checkBox_StartMinimized
             // 
@@ -1075,12 +986,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(944, 533);
-            this.Controls.Add(this.startupOptions);
-            this.Controls.Add(this.groupBox_vJoy_output);
-            this.Controls.Add(this.checkBox_EnableJoystick);
+            this.ClientSize = new System.Drawing.Size(width, height);
+            this.Controls.Add(this.options);
             this.Controls.Add(this.consoleBox);
             this.Controls.Add(this.groupBox_Actions);
+            this.Controls.Add(this.groupBox_BalanceRatioTriggers);
             this.Controls.Add(this.label_Status);
             this.Controls.Add(this.groupBox_BalanceRatio);
             this.Controls.Add(this.groupBox_General);
@@ -1119,11 +1029,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_AF)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_AR)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_AL)).EndInit();
-            this.groupBox_vJoy_output.ResumeLayout(false);
-            this.groupBox_vJoy_output.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.VJoyIDUpDown)).EndInit();
-            this.startupOptions.ResumeLayout(false);
-            this.startupOptions.PerformLayout();
+            this.options.ResumeLayout(false);
+            this.options.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1195,18 +1102,15 @@
         private System.Windows.Forms.Button button_ResetDefaults;
         private System.Windows.Forms.CheckBox checkBox_DisableActions;
         private System.Windows.Forms.Label label_owWT;
-        private System.Windows.Forms.CheckBox checkBox_EnableJoystick;
         private System.Windows.Forms.CheckBox checkBox_SendCGtoXY;
         private System.Windows.Forms.Button zeroout;
         private System.Windows.Forms.TextBox consoleBox;
         private System.Windows.Forms.CheckBox checkBox_Send4LoadSensors;
-        private System.Windows.Forms.GroupBox groupBox_vJoy_output;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.NumericUpDown VJoyIDUpDown;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox checkBox_ShowValuesInConsole;
-        private System.Windows.Forms.GroupBox startupOptions;
+        private System.Windows.Forms.GroupBox options;
         private System.Windows.Forms.CheckBox checkBox_StartupAutoConnect;
         private System.Windows.Forms.CheckBox checkBox_AutoTare;
         private System.Windows.Forms.CheckBox checkBox_StartMinimized;

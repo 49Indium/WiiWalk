@@ -1,4 +1,5 @@
 ﻿//----------------------------------------------------------------------------------------------------------------------+
+// TODO
 // WiiBalanceWalker v0.5, by Shachar Liberman
 // Originally Released by Richard Perry from GreyCube.com - Under the Microsoft Public License.
 //
@@ -6,9 +7,6 @@
 //
 // Uses lshachar's WiimoteLib DLL:                  https://github.com/lshachar/WiimoteLib
 // Uses the 32Feet.NET bluetooth DLL:               http://32feet.codeplex.com/
-// Uses vJoy device driver (by Shaul Eizikovich):   http://vjoystick.sourceforge.net/site/index.php/download-a-install/download
-// (Previous to WiiBalanceWalker v0.5
-//  VJoy by headsoft was used)                      http://headsoft.com.au/index.php?category=vjoy
 //----------------------------------------------------------------------------------------------------------------------+
 
 using System;
@@ -25,7 +23,6 @@ namespace WiiBalanceWalker
     {
 
         System.Timers.Timer infoUpdateTimer = new System.Timers.Timer() { Interval = 18, Enabled = false };
-        System.Timers.Timer joyResetTimer = new System.Timers.Timer() { Interval = 240000, Enabled = false };
         public const double maxJumpLength = 0.6;
         public const double walkStartTime = 0.5;
         public const double walkEndTime = 0.4;
@@ -115,11 +112,7 @@ namespace WiiBalanceWalker
 
             checkBox_SendCGtoXY.Checked = Properties.Settings.Default.SendCGtoXY;
             checkBox_Send4LoadSensors.Checked = Properties.Settings.Default.Send4LoadSensors;
-            checkBox_ShowValuesInConsole.Checked = Properties.Settings.Default.ShowValuesInConsole;
-            checkBox_EnableJoystick.Checked = Properties.Settings.Default.EnableJoystick;
             checkBox_DisableActions.Checked = Properties.Settings.Default.DisableActions;
-            checkBox_StartupAutoConnect.Checked = Properties.Settings.Default.EnableJoystick;
-            checkBox_AutoTare.Checked = Properties.Settings.Default.EnableJoystick;
             checkBox_StartMinimized.Checked = Properties.Settings.Default.StartMinimized;
 
             if (checkBox_StartupAutoConnect.Checked)
@@ -475,178 +468,116 @@ namespace WiiBalanceWalker
                 if (sendDiagonalRight) actionList.DiagonalRight.Start(); else actionList.DiagonalRight.Stop();
             }
 
-            // Update joystick emulator.
-
-            if (checkBox_EnableJoystick.Checked)
+            if (walkingOn)
             {
-                if (walkingOn)
+                // Up foot should be opposite to down foor
+                Foot currentFoot = Foot.None;
+                if (sendLeft) currentFoot = Foot.Left;
+                if (sendRight) currentFoot = Foot.Right;
+
+                DateTime now = DateTime.UtcNow;
+
+                bool alternateFoot = (currentFoot != Foot.None && currentFoot == get_opposite_foot(lastFoot));
+                if (alternateFoot) BalanceWalker.FormMain.consoleBoxWriteLine("Alternates");
+
+                double seconsdSinceLastFootSwitch = (now - lastFootSwitchTime).TotalMilliseconds / 1000;
+                double secondsSinceLastWalk = (now - lastWalkTime).TotalMilliseconds / 1000;
+
+                if (sprintingOn)
                 {
-                    // Up foot should be opposite to down foor
-                    Foot currentFoot = Foot.None;
-                    if (sendLeft) currentFoot = Foot.Left;
-                    if (sendRight) currentFoot = Foot.Right;
-
-                    DateTime now = DateTime.UtcNow;
-
-                    bool alternateFoot = (currentFoot != Foot.None && currentFoot == get_opposite_foot(lastFoot));
-                    if (alternateFoot) BalanceWalker.FormMain.consoleBoxWriteLine("Alternates");
-
-                    double seconsdSinceLastFootSwitch = (now - lastFootSwitchTime).TotalMilliseconds / 1000;
-                    double secondsSinceLastWalk = (now - lastWalkTime).TotalMilliseconds / 1000;
-
-                    if (sprintingOn)
+                    if (alternateFoot && !isSprinting && seconsdSinceLastFootSwitch < sprintStartTime)
                     {
-                        if (alternateFoot && !isSprinting && seconsdSinceLastFootSwitch < sprintStartTime)
-                        {
-                            actionList.Modifier.Start();
-                            BalanceWalker.FormMain.consoleBoxWriteLine("They be sprinting");
-                            isSprinting = true;
-                        }
-                        else if (isSprinting && seconsdSinceLastFootSwitch >= sprintEndTime && !isJumping)
-                        {
-                            BalanceWalker.FormMain.consoleBoxWriteLine("They be haulting (no sprinting)");
-                            actionList.Modifier.Stop();
-                            isSprinting = false;
-                        }
+                        actionList.Modifier.Start();
+                        BalanceWalker.FormMain.consoleBoxWriteLine("They be sprinting");
+                        isSprinting = true;
                     }
-
-                    if (alternateFoot && !isWalking && (seconsdSinceLastFootSwitch < walkStartTime || secondsSinceLastWalk < walkContinuationTime))
+                    else if (isSprinting && seconsdSinceLastFootSwitch >= sprintEndTime && !isJumping)
                     {
-                        actionList.Forward.Start();
-                        BalanceWalker.FormMain.consoleBoxWriteLine("They be walking");
-                        if (secondsSinceLastWalk < walkContinuationTime) BalanceWalker.FormMain.consoleBoxWriteLine("They still be walking");
-                        isWalking = true;
+                        BalanceWalker.FormMain.consoleBoxWriteLine("They be haulting (no sprinting)");
+                        actionList.Modifier.Stop();
+                        isSprinting = false;
                     }
-                    else if (isWalking && seconsdSinceLastFootSwitch >= walkEndTime && !isJumping)
-                    {
-                        actionList.Forward.Stop();
-                        BalanceWalker.FormMain.consoleBoxWriteLine("They be stopped");
-                        lastWalkTime = now;
-                        isWalking = false;
-                    }
-
-                    if (alternateFoot) lastFootSwitchTime = now;
-                    if (currentFoot != lastFoot) lastFootChangeStateTime = now;
-                    if (currentFoot != Foot.None) lastFoot = currentFoot;
                 }
 
-                if (turningOn)
+                if (alternateFoot && !isWalking && (seconsdSinceLastFootSwitch < walkStartTime || secondsSinceLastWalk < walkContinuationTime))
                 {
-                    brX = !float.IsNaN(brX) ? brX : 50;
-                    leftRightCentering.Enqueue(brX);
-                    leftRightAverage += brX;
-                    if (leftRightCentering.Count > maxAverageCount)
-                    {
-                        leftRightAverage -= leftRightCentering.Dequeue();
-                    }
-                    
-                        BalanceWalker.FormMain.consoleBoxWriteLine((leftRightAverage / leftRightCentering.Count).ToString());
-
-
-                    int turnPercentage = 0;
-                    if (isWalking || isSprinting)
-                    {
-                        turnPercentage = turning_movement_scale(leftRightAverage / leftRightCentering.Count, tiltMaxMoving, tiltSpeedMoving, turningNullZonePercentageMoving);
-                    }
-                    else
-                    {
-                        turnPercentage = turning_movement_scale(brX, tiltMax, tiltSpeed, turningNullZonePercentage);
-                    }
-                    actionList.Left.changeAmount(turnPercentage);
-                    //TODO run only once
-                    actionList.Left.Start();
+                    actionList.Forward.Start();
+                    BalanceWalker.FormMain.consoleBoxWriteLine("They be walking");
+                    if (secondsSinceLastWalk < walkContinuationTime) BalanceWalker.FormMain.consoleBoxWriteLine("They still be walking");
+                    isWalking = true;
+                }
+                else if (isWalking && seconsdSinceLastFootSwitch >= walkEndTime && !isJumping)
+                {
+                    actionList.Forward.Stop();
+                    BalanceWalker.FormMain.consoleBoxWriteLine("They be stopped");
+                    lastWalkTime = now;
+                    isWalking = false;
                 }
 
-                if (jumpingOn)
-                {
-                    DateTime now = DateTime.UtcNow;
-                    bool offBalanceBoard = owWeight < 1f;
-                    double secondsSinceLastJump = (now - lastGroundTime).TotalMilliseconds / 1000;
-
-                    // Jump
-                    if (!isJumping && wasOnBalanceBoard && offBalanceBoard)
-                    {
-                        actionList.Jump.Start();
-                        BalanceWalker.FormMain.consoleBoxWriteLine("They be jumping");
-                        isJumping = true;
-                    }
-                    // Flying
-                    if (isJumping && secondsSinceLastJump >= maxJumpLength)
-                    {
-                        actionList.Jump.Stop();
-                        isJumping = false;
-                        BalanceWalker.FormMain.consoleBoxWriteLine("They be flying (how you do that?)");
-                    }
-                    else if (isJumping && !offBalanceBoard)
-                    {
-                        actionList.Jump.Stop();
-                        BalanceWalker.FormMain.consoleBoxWriteLine("They be landing");
-                        isJumping = false;
-                    }
-
-                    if (!offBalanceBoard) lastGroundTime = now;
-
-                    wasOnBalanceBoard = !offBalanceBoard;
-                }
-
-                double joyX = 0, joyY = 0;
-
-                // send X/Y position of the player's Center of Gravity through vJoy
-
-                if (checkBox_SendCGtoXY.Checked)
-                {
-                    //var cgF = wiiDevice.WiimoteState.BalanceBoardState.CenterOfGravity; // this is a nice function, but since I found out that wiimote library won't let me: 1.tare the balance board 2.compensate for temperature / latitude 3.has a bug with the kg values (each sensor is 4 times too big, but the overall weight is fine) then I'm not using it. It cannot give calibrated results.
-
-                    // Uses Int16 ( -32767 to +32767 ) where 0 is the center. Multiplied by 2 because realistic usage is between the 30-70% ratio.
-
-                    joyX = (brX * 655.34 + -32767.0) * 2.0;
-                    joyY = (brY * 655.34 + -32767.0) * 2.0;
-                    //Console.WriteLine("joyX {0} JoyY {1}",joyX, joyY);
-
-                    // Limit values to Int16, you cannot just (cast) or Convert.ToIn16() as the value '+ - sign' may invert.
-
-                    if (joyX < short.MinValue) joyX = short.MinValue;
-                    if (joyY < short.MinValue) joyY = short.MinValue;
-
-                    if (joyX > short.MaxValue) joyX = short.MaxValue;
-                    if (joyY > short.MaxValue) joyY = short.MaxValue;
-
-                    if (Double.IsNaN(joyX)) joyX = 0.0;         // send the dead center value if not enough weight is on the board
-                    if (Double.IsNaN(joyY)) joyY = 0.0;
-                }
-
-                if (!checkBox_Send4LoadSensors.Checked)
-                {
-                    rwTopLeft = 0; rwTopRight = 0; rwBottomLeft = 0; rwBottomRight = 0;
-                }
-                string values = string.Format("X:{0,6:#####}  Y:{1,6:#####}  Z:{2,6:###.##}  XR:{3,6:###.##}  YR:{4,6:###.##}  ZR:{5,6:###.##}", joyX, joyY, rwTopLeft, rwTopRight, rwBottomLeft, rwBottomRight);
-
-                if (checkBox_ShowValuesInConsole.Checked)
-                {
-                    BalanceWalker.FormMain.consoleBoxWriteLine(values);
-                }
-                // VJoyFeeder.Setjoystick((int)joyX, (int)joyY, (int)(rwTopLeft * 100), (int)(rwTopRight * 100), (int)(rwBottomLeft * 100), (int)(rwBottomRight * 100), aButton);
+                if (alternateFoot) lastFootSwitchTime = now;
+                if (currentFoot != lastFoot) lastFootChangeStateTime = now;
+                if (currentFoot != Foot.None) lastFoot = currentFoot;
             }
-        }
 
-        private void checkBox_EnableJoystick_CheckedChanged(object sender, EventArgs e)
-        {
-            var isChecked = ((CheckBox)sender).Checked;
-            Properties.Settings.Default.EnableJoystick = isChecked;
-            Properties.Settings.Default.Save();
-
-            bool status;
-            if (checkBox_EnableJoystick.Checked)
+            if (turningOn)
             {
-                // VJoyFeeder.Initialize((uint)VJoyIDUpDown.Value);
-                status = true;
+                brX = !float.IsNaN(brX) ? brX : 50;
+                leftRightCentering.Enqueue(brX);
+                leftRightAverage += brX;
+                if (leftRightCentering.Count > maxAverageCount)
+                {
+                    leftRightAverage -= leftRightCentering.Dequeue();
+                }
+
+                BalanceWalker.FormMain.consoleBoxWriteLine((leftRightAverage / leftRightCentering.Count).ToString());
+
+
+                int turnPercentage = 0;
+                if (isWalking || isSprinting)
+                {
+                    turnPercentage = turning_movement_scale(leftRightAverage / leftRightCentering.Count, tiltMaxMoving, tiltSpeedMoving, turningNullZonePercentageMoving);
+                }
+                else
+                {
+                    turnPercentage = turning_movement_scale(brX, tiltMax, tiltSpeed, turningNullZonePercentage);
+                }
+                actionList.Left.changeAmount(turnPercentage);
+                //TODO run only once
+                actionList.Left.Start();
             }
-            else
+
+            if (jumpingOn)
             {
-                status = false;
+                DateTime now = DateTime.UtcNow;
+                bool offBalanceBoard = owWeight < 1f;
+                double secondsSinceLastJump = (now - lastGroundTime).TotalMilliseconds / 1000;
+
+                // Jump
+                if (!isJumping && wasOnBalanceBoard && offBalanceBoard)
+                {
+                    actionList.Jump.Start();
+                    BalanceWalker.FormMain.consoleBoxWriteLine("They be jumping");
+                    isJumping = true;
+                }
+                // Flying
+                if (isJumping && secondsSinceLastJump >= maxJumpLength)
+                {
+                    actionList.Jump.Stop();
+                    isJumping = false;
+                    BalanceWalker.FormMain.consoleBoxWriteLine("They be flying (how you do that?)");
+                }
+                else if (isJumping && !offBalanceBoard)
+                {
+                    actionList.Jump.Stop();
+                    BalanceWalker.FormMain.consoleBoxWriteLine("They be landing");
+                    isJumping = false;
+                }
+
+                if (!offBalanceBoard) lastGroundTime = now;
+
+                wasOnBalanceBoard = !offBalanceBoard;
+
             }
-            checkBox_SendCGtoXY.Enabled = status;
-            checkBox_Send4LoadSensors.Enabled = status;
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
