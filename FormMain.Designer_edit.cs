@@ -432,12 +432,12 @@
             // 
             // groupBox_Constants
             // 
-            this.groupBox_BalanceRatioTriggers.Controls.Add(this.numericUpDown_TMFB);
-            this.groupBox_BalanceRatioTriggers.Controls.Add(this.numericUpDown_TMLR);
-            this.groupBox_BalanceRatioTriggers.Controls.Add(this.numericUpDown_TFB);
+            // this.groupBox_BalanceRatioTriggers.Controls.Add(this.numericUpDown_TMFB);
+            // this.groupBox_BalanceRatioTriggers.Controls.Add(this.numericUpDown_TMLR);
+            // this.groupBox_BalanceRatioTriggers.Controls.Add(this.numericUpDown_TFB);
             this.groupBox_BalanceRatioTriggers.Controls.Add(this.numericUpDown_TLR);
-            this.groupBox_BalanceRatioTriggers.Controls.Add(this.label_TMFB);
-            this.groupBox_BalanceRatioTriggers.Controls.Add(this.label_TMLR);
+            // this.groupBox_BalanceRatioTriggers.Controls.Add(this.label_TMFB);
+            // this.groupBox_BalanceRatioTriggers.Controls.Add(this.label_TMLR);
             this.groupBox_BalanceRatioTriggers.Controls.Add(this.label_TFB);
             this.groupBox_BalanceRatioTriggers.Controls.Add(this.label_TLR);
             this.groupBox_BalanceRatioTriggers.Location = new System.Drawing.Point((int)(width/3)+padding, sec1Height+sec2Height+padding);
@@ -445,7 +445,7 @@
             this.groupBox_BalanceRatioTriggers.Size = new System.Drawing.Size((int)(width/3)-2*padding, sec3Height-2*padding);
             this.groupBox_BalanceRatioTriggers.TabIndex = 1;
             this.groupBox_BalanceRatioTriggers.TabStop = false;
-            this.groupBox_BalanceRatioTriggers.Text = "Constants";
+            this.groupBox_BalanceRatioTriggers.Text = "Deadzones";
             // 
             // numericUpDown_TMFB //TODO
             // 
@@ -564,7 +564,7 @@
             this.label_TFB.Name = "label_TFB";
             this.label_TFB.Size = new System.Drawing.Size(110, 13);
             this.label_TFB.TabIndex = 0;
-            this.label_TFB.Text = "- Forward / Backward";
+            this.label_TFB.Text = "- Others can be set in code";
             // 
             // label_TLR
             // 
@@ -587,30 +587,30 @@
             // 
             // groupBox_Actions
             // 
-            this.groupBox_Actions.Controls.Add(this.checkBox_DisableActions);
-            this.groupBox_Actions.Controls.Add(this.numericUpDown_ADR);
-            this.groupBox_Actions.Controls.Add(this.numericUpDown_ADL);
-            this.groupBox_Actions.Controls.Add(this.numericUpDown_AJ);
-            this.groupBox_Actions.Controls.Add(this.numericUpDown_AM);
-            this.groupBox_Actions.Controls.Add(this.numericUpDown_AB);
-            this.groupBox_Actions.Controls.Add(this.numericUpDown_AF);
-            this.groupBox_Actions.Controls.Add(this.comboBox_ADR);
+            // this.groupBox_Actions.Controls.Add(this.checkBox_DisableActions);
+            // this.groupBox_Actions.Controls.Add(this.numericUpDown_ADR);
+            // this.groupBox_Actions.Controls.Add(this.numericUpDown_ADL);
+            // this.groupBox_Actions.Controls.Add(this.numericUpDown_AJ);
+            // this.groupBox_Actions.Controls.Add(this.numericUpDown_AM);
+            // this.groupBox_Actions.Controls.Add(this.numericUpDown_AB);
+            // this.groupBox_Actions.Controls.Add(this.numericUpDown_AF);
+            // this.groupBox_Actions.Controls.Add(this.comboBox_ADR);
             this.groupBox_Actions.Controls.Add(this.comboBox_AJ);
-            this.groupBox_Actions.Controls.Add(this.comboBox_ADL);
+            // this.groupBox_Actions.Controls.Add(this.comboBox_ADL);
             this.groupBox_Actions.Controls.Add(this.label_ActionJump);
-            this.groupBox_Actions.Controls.Add(this.label_ActionDiagonalRight);
-            this.groupBox_Actions.Controls.Add(this.label_ActionDiagonalLeft);
+            // this.groupBox_Actions.Controls.Add(this.label_ActionDiagonalRight);
+            // this.groupBox_Actions.Controls.Add(this.label_ActionDiagonalLeft);
             this.groupBox_Actions.Controls.Add(this.label_ActionModifier);
             this.groupBox_Actions.Controls.Add(this.label_ActionBackward);
             this.groupBox_Actions.Controls.Add(this.label_ActionForward);
-            this.groupBox_Actions.Controls.Add(this.label_ActionRight);
+            // this.groupBox_Actions.Controls.Add(this.label_ActionRight);
             this.groupBox_Actions.Controls.Add(this.label_ActionLeft);
-            this.groupBox_Actions.Controls.Add(this.numericUpDown_AR);
-            this.groupBox_Actions.Controls.Add(this.numericUpDown_AL);
+            // this.groupBox_Actions.Controls.Add(this.numericUpDown_AR);
+            // this.groupBox_Actions.Controls.Add(this.numericUpDown_AL);
             this.groupBox_Actions.Controls.Add(this.comboBox_AM);
             this.groupBox_Actions.Controls.Add(this.comboBox_AF);
             this.groupBox_Actions.Controls.Add(this.comboBox_AB);
-            this.groupBox_Actions.Controls.Add(this.comboBox_AR);
+            // this.groupBox_Actions.Controls.Add(this.comboBox_AR);
             this.groupBox_Actions.Controls.Add(this.comboBox_AL);
             this.groupBox_Actions.Location = new System.Drawing.Point(padding, sec1Height + sec2Height + padding);
             this.groupBox_Actions.Name = "groupBox_Actions";
@@ -793,7 +793,7 @@
             this.label_ActionModifier.Name = "label_ActionModifier";
             this.label_ActionModifier.Size = new System.Drawing.Size(50, 13);
             this.label_ActionModifier.TabIndex = 0;
-            this.label_ActionModifier.Text = "- Modifier";
+            this.label_ActionModifier.Text = "- Sprint Modifier";
             // 
             // label_ActionBackward
             // 
@@ -802,7 +802,7 @@
             this.label_ActionBackward.Name = "label_ActionBackward";
             this.label_ActionBackward.Size = new System.Drawing.Size(61, 13);
             this.label_ActionBackward.TabIndex = 0;
-            this.label_ActionBackward.Text = "- Backward";
+            this.label_ActionBackward.Text = "- Tilt Vertical";
             // 
             // label_ActionForward
             // 
@@ -811,7 +811,7 @@
             this.label_ActionForward.Name = "label_ActionForward";
             this.label_ActionForward.Size = new System.Drawing.Size(51, 13);
             this.label_ActionForward.TabIndex = 0;
-            this.label_ActionForward.Text = "- Forward";
+            this.label_ActionForward.Text = "- Walk";
             // 
             // label_ActionRight
             // 
@@ -829,7 +829,7 @@
             this.label_ActionLeft.Name = "label_ActionLeft";
             this.label_ActionLeft.Size = new System.Drawing.Size(31, 13);
             this.label_ActionLeft.TabIndex = 0;
-            this.label_ActionLeft.Text = "- Left";
+            this.label_ActionLeft.Text = "- Tilt Horizontal";
             // 
             // numericUpDown_AR
             // 

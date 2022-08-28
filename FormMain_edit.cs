@@ -1,5 +1,4 @@
-﻿
-// Wii Walk by Isaac Beh (49Indium)
+﻿// Wii Walk by Isaac Beh (49Indium)
 // Based off WiiBalanceWalker v0.5, by Shachar Liberman
 // Which was derived from Richard Perry from GreyCube.com - Under the Microsoft Public License
 
