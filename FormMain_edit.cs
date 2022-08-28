@@ -1,13 +1,8 @@
-﻿//----------------------------------------------------------------------------------------------------------------------+
-// TODO
-// WiiBalanceWalker v0.5, by Shachar Liberman
-// Originally Released by Richard Perry from GreyCube.com - Under the Microsoft Public License.
-//
-// released for windows 10 x64 systems, x86 should be supported too.
-//
-// Uses lshachar's WiimoteLib DLL:                  https://github.com/lshachar/WiimoteLib
-// Uses the 32Feet.NET bluetooth DLL:               http://32feet.codeplex.com/
-//----------------------------------------------------------------------------------------------------------------------+
+﻿
+// Wii Walk by Isaac Beh (49Indium)
+// Based off WiiBalanceWalker v0.5, by Shachar Liberman
+// Which was derived from Richard Perry from GreyCube.com - Under the Microsoft Public License
+
 
 using System;
 using System.Text.RegularExpressions;
@@ -15,6 +10,8 @@ using System.Timers;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using WiimoteLib;
+
+using System.Text;
 
 namespace WiiBalanceWalker
 {
@@ -24,7 +21,7 @@ namespace WiiBalanceWalker
 
         System.Timers.Timer infoUpdateTimer = new System.Timers.Timer() { Interval = 18, Enabled = false };
         public const double maxJumpLength = 0.6;
-        public const double walkStartTime = 0.5;
+        public const double walkStartTime = 0.45;
         public const double walkEndTime = 0.4;
         public const double sprintStartTime = 0.15;
         public const double sprintEndTime = 0.25;
@@ -35,23 +32,24 @@ namespace WiiBalanceWalker
         public const bool turningVerticalOn = true;
         public const bool jumpingOn = true;
         public const double turningNullZonePercentage = 13.0;
-        public const double tiltSpeed = 1.2;
+        public const double tiltSpeed = 1.15;
         public const double tiltMax = 7.0;
         public const double turningNullZonePercentageMoving = 18.0;
-        public const double tiltSpeedMoving = 1.35;
+        public const double tiltSpeedMoving = 1.25;
         public const double tiltMaxMoving = 15.0;
         public const double turningNullZonePercentageVertical = 9.0;
-        public const double tiltSpeedVertical = 1.1;
+        public const double tiltSpeedVertical = 1.05;
         public const double tiltMaxVertical = -5.0;
-        public const double turningNullZonePercentageVerticalMoving = 12.0;
-        public const double tiltSpeedVerticalMoving = 1.1;
+        public const double turningNullZonePercentageVerticalMoving = 22.5;
+        public const double tiltSpeedVerticalMoving = 1.05;
         public const double tiltMaxVerticalMoving = -3.0;
 
         public const int maxAverageCount = 12;
         public const int maxAverageCountVertical = 15;
 
         ActionList actionList = new ActionList();
-        Wiimote wiiDevice = new Wiimote();
+        Wiimote wiiBalanceBoard = new Wiimote();
+        Wiimote wiiStick = new Wiimote();
         DateTime lastGroundTime = DateTime.UtcNow;
         // The last change from left to right
         DateTime lastFootSwitchTime = DateTime.UtcNow;
@@ -163,7 +161,7 @@ namespace WiiBalanceWalker
 
         private void button_SetCenterOffset_Click(object sender, EventArgs e)
         {
-            if (resetCenterOffsetPossible && wiiDevice.WiimoteState.BalanceBoardState.WeightKg <= 5)
+            if (resetCenterOffsetPossible && wiiBalanceBoard.WiimoteState.BalanceBoardState.WeightKg <= 5)
             {
                 naCorners = 0f;
                 oaTopLeft = 0f;
@@ -206,45 +204,66 @@ namespace WiiBalanceWalker
 
                 for (int i = 0; i < deviceCollection.Count; i++)
                 {
-                    wiiDevice = deviceCollection[i];
+                    wiiBalanceBoard = deviceCollection[i];
 
                     // Device type can only be found after connection, so prompt for multiple devices.
 
                     if (deviceCollection.Count > 1)
                     {
-                        var devicePathId = new Regex("e_pid&.*?&(.*?)&").Match(wiiDevice.HIDDevicePath).Groups[1].Value.ToUpper();
+                        var devicePathId = new Regex("e_pid&.*?&(.*?)&").Match(wiiBalanceBoard.HIDDevicePath).Groups[1].Value.ToUpper();
 
-                        var response = MessageBox.Show("Connect to HID " + devicePathId + " device " + (i + 1) + " of " + deviceCollection.Count + " ?", "Multiple Wii Devices Found", MessageBoxButtons.YesNoCancel);
+                        var response = MessageBox.Show("Connect Wii Balance Board to HID " + devicePathId + " device " + (i + 1) + " of " + deviceCollection.Count + " ?", "Multiple Wii Devices Found", MessageBoxButtons.YesNoCancel);
                         if (response == DialogResult.Cancel) return;
                         if (response == DialogResult.No) continue;
                     }
-
-                    // Setup update handlers.
-
-                    wiiDevice.WiimoteChanged += wiiDevice_WiimoteChanged;
-                    wiiDevice.WiimoteExtensionChanged += wiiDevice_WiimoteExtensionChanged;
-
-                    // Connect and send a request to verify it worked.
-
-                    wiiDevice.Connect();
-                    wiiDevice.SetReportType(InputReport.IRAccel, false); // FALSE = DEVICE ONLY SENDS UPDATES WHEN VALUES CHANGE!
-                    wiiDevice.SetLEDs(true, false, false, false);
-
-                    // Enable processing of updates.
-
-                    infoUpdateTimer.Enabled = true;
-
-                    // Prevent connect being pressed more than once.
-
-                    button_Connect.Enabled = false;
-                    button_BluetoothAddDevice.Enabled = false;
-                    zeroout.Enabled = true;
-
-                    if (checkBox_AutoTare.Checked)
-                        zeroout.PerformClick();
-
-                    break;
                 }
+
+                // for (int i = 0; i < deviceCollection.Count; i++)
+                // {
+                //     wiiStick = deviceCollection[i];
+
+                //     // Device type can only be found after connection, so prompt for multiple devices.
+
+                //     if (deviceCollection.Count > 1)
+                //     {
+                //         var devicePathId = new Regex("e_pid&.*?&(.*?)&").Match(wiiStick.HIDDevicePath).Groups[1].Value.ToUpper();
+
+                //         var response = MessageBox.Show("Connect Wii Remote (stick) to HID " + devicePathId + " device " + (i + 1) + " of " + deviceCollection.Count + " ?", "Multiple Wii Devices Found", MessageBoxButtons.YesNoCancel);
+                //         if (response == DialogResult.Cancel) return;
+                //         if (response == DialogResult.No) continue;
+                //     }
+                // }
+
+                // Setup update handlers.
+
+                wiiBalanceBoard.WiimoteChanged += wiiDevice_WiimoteChanged;
+                wiiBalanceBoard.WiimoteExtensionChanged += wiiDevice_WiimoteExtensionChanged;
+
+                // wiiStick.WiimoteChanged += wiiDevice_WiimoteChanged;
+                // wiiStick.WiimoteExtensionChanged += wiiDevice_WiimoteExtensionChanged;
+
+                // Connect and send a request to verify it worked.
+
+                wiiBalanceBoard.Connect();
+                wiiBalanceBoard.SetReportType(InputReport.IRAccel, false); // FALSE = DEVICE ONLY SENDS UPDATES WHEN VALUES CHANGE!
+                wiiBalanceBoard.SetLEDs(true, false, false, false);
+
+                // wiiStick.Connect();
+                // wiiStick.SetReportType(InputReport.IRAccel, false); // FALSE = DEVICE ONLY SENDS UPDATES WHEN VALUES CHANGE!
+                // wiiStick.SetLEDs(false, true, false, false);
+
+                // Enable processing of updates.
+
+                infoUpdateTimer.Enabled = true;
+
+                // Prevent connect being pressed more than once.
+
+                button_Connect.Enabled = false;
+                button_BluetoothAddDevice.Enabled = false;
+                zeroout.Enabled = true;
+
+                if (checkBox_AutoTare.Checked)
+                    zeroout.PerformClick();
             }
             catch (Exception ex)
             {
@@ -257,6 +276,15 @@ namespace WiiBalanceWalker
             // Called every time there is a sensor update, values available using e.WiimoteState.
             // Use this for tracking and filtering rapid accelerometer and gyroscope sensor data.
             // The balance board values are basic, so can be accessed directly only when needed.
+
+            // var props = e.GetType().GetProperties();
+            // var sb = new StringBuilder();
+            // foreach (var p in props)
+            // {
+            //     sb.AppendLine(p.Name + ": " + p.GetValue(e, null));
+            // }
+            // BalanceWalker.FormMain.consoleBoxWriteLine(sb.ToString());
+
         }
 
         private void wiiDevice_WiimoteExtensionChanged(object sender, WiimoteExtensionChangedEventArgs e)
@@ -273,7 +301,7 @@ namespace WiiBalanceWalker
 
         private void InfoUpdate()
         {
-            if (wiiDevice.WiimoteState.ExtensionType != ExtensionType.BalanceBoard)
+            if (wiiBalanceBoard.WiimoteState.ExtensionType != ExtensionType.BalanceBoard)
             {
                 label_Status.Text = "DEVICE IS NOT A BALANCE BOARD...";
                 return;
@@ -281,20 +309,20 @@ namespace WiiBalanceWalker
 
             // Get the current sensor KG values. (no temperature / latitude correction, can't set zero point properly.)
 
-            var rwWeight = wiiDevice.WiimoteState.BalanceBoardState.WeightKg;
+            var rwWeight = wiiBalanceBoard.WiimoteState.BalanceBoardState.WeightKg;
 
-            var rwTopLeft = wiiDevice.WiimoteState.BalanceBoardState.SensorValuesKg.TopLeft;
-            var rwTopRight = wiiDevice.WiimoteState.BalanceBoardState.SensorValuesKg.TopRight;
-            var rwBottomLeft = wiiDevice.WiimoteState.BalanceBoardState.SensorValuesKg.BottomLeft;
-            var rwBottomRight = wiiDevice.WiimoteState.BalanceBoardState.SensorValuesKg.BottomRight;
-            var aButton = wiiDevice.WiimoteState.ButtonState.A;
+            var rwTopLeft = wiiBalanceBoard.WiimoteState.BalanceBoardState.SensorValuesKg.TopLeft;
+            var rwTopRight = wiiBalanceBoard.WiimoteState.BalanceBoardState.SensorValuesKg.TopRight;
+            var rwBottomLeft = wiiBalanceBoard.WiimoteState.BalanceBoardState.SensorValuesKg.BottomLeft;
+            var rwBottomRight = wiiBalanceBoard.WiimoteState.BalanceBoardState.SensorValuesKg.BottomRight;
+            var aButton = wiiBalanceBoard.WiimoteState.ButtonState.A;
 
             // The alternative .SensorValuesRaw is meaningless in terms of actual weight. not adjusted with 0KG, 17KG and 34KG calibration data.
 
-            //var rwTopLeft     = wiiDevice.WiimoteState.BalanceBoardState.SensorValuesRaw.TopLeft     - wiiDevice.WiimoteState.BalanceBoardState.CalibrationInfo.Kg0.TopLeft;
-            //var rwTopRight    = wiiDevice.WiimoteState.BalanceBoardState.SensorValuesRaw.TopRight    - wiiDevice.WiimoteState.BalanceBoardState.CalibrationInfo.Kg0.TopRight;
-            //var rwBottomLeft  = wiiDevice.WiimoteState.BalanceBoardState.SensorValuesRaw.BottomLeft  - wiiDevice.WiimoteState.BalanceBoardState.CalibrationInfo.Kg0.BottomLeft;
-            //var rwBottomRight = wiiDevice.WiimoteState.BalanceBoardState.SensorValuesRaw.BottomRight - wiiDevice.WiimoteState.BalanceBoardState.CalibrationInfo.Kg0.BottomRight;
+            //var rwTopLeft     = wiiBalanceBoard.WiimoteState.BalanceBoardState.SensorValuesRaw.TopLeft     - wiiBalanceBoard.WiimoteState.BalanceBoardState.CalibrationInfo.Kg0.TopLeft;
+            //var rwTopRight    = wiiBalanceBoard.WiimoteState.BalanceBoardState.SensorValuesRaw.TopRight    - wiiBalanceBoard.WiimoteState.BalanceBoardState.CalibrationInfo.Kg0.TopRight;
+            //var rwBottomLeft  = wiiBalanceBoard.WiimoteState.BalanceBoardState.SensorValuesRaw.BottomLeft  - wiiBalanceBoard.WiimoteState.BalanceBoardState.CalibrationInfo.Kg0.BottomLeft;
+            //var rwBottomRight = wiiBalanceBoard.WiimoteState.BalanceBoardState.SensorValuesRaw.BottomRight - wiiBalanceBoard.WiimoteState.BalanceBoardState.CalibrationInfo.Kg0.BottomRight;
 
             // Show the sensor values in kg.
             label_rwWT.Text = rwWeight.ToString("0.0");
@@ -565,7 +593,7 @@ namespace WiiBalanceWalker
 
             }
 
-            
+
 
             // Display actions.
 
@@ -589,7 +617,7 @@ namespace WiiBalanceWalker
             // Stop updates.
 
             infoUpdateTimer.Enabled = false;
-            wiiDevice.Disconnect();
+            wiiBalanceBoard.Disconnect();
 
             // Prevent 'stuck' down keys from closing while doing an action.
 
@@ -605,7 +633,7 @@ namespace WiiBalanceWalker
 
         private void zeroout_Click(object sender, EventArgs e)
         {
-            wiiDevice.WiimoteState.BalanceBoardState.ZeroPoint.Reset = true;
+            wiiBalanceBoard.WiimoteState.BalanceBoardState.ZeroPoint.Reset = true;
             naCorners = 0f;
             oaTopLeft = 0f;
             oaTopRight = 0f;
