@@ -17,19 +17,29 @@ namespace WiiBalanceWalker
 
     public partial class FormMain : Form
     {
-
+        // Causes updates to keypresses
         System.Timers.Timer infoUpdateTimer = new System.Timers.Timer() { Interval = 18, Enabled = false };
-        public const double maxJumpLength = 0.6;
+
+        // Jumping parameters
+        public const double maxJumpTime = 0.6;
+
+        // Walking & sprinting parameters
         public const double walkStartTime = 0.45;
         public const double walkEndTime = 0.4;
         public const double sprintStartTime = 0.15;
         public const double sprintEndTime = 0.25;
         public const double walkContinuationTime = 1.3;
+
+        // Turn Certain movements on or off
         public const bool walkingOn = true;
         public const bool sprintingOn = true;
         public const bool turningOn = true;
         public const bool turningVerticalOn = true;
         public const bool jumpingOn = true;
+
+        // Tilting parameters
+        // Speed is rate at which a percentage weight shift leads to action
+        // Maximum is the maximum rate at which the action can occur
         public const double turningNullZonePercentage = 17.0;
         public const double tiltSpeed = 1.15;
         public const double tiltMax = 8.0;
@@ -43,6 +53,7 @@ namespace WiiBalanceWalker
         public const double tiltSpeedVerticalMoving = 1.05;
         public const double tiltMaxVerticalMoving = -2.0;
 
+        // The number of measurements to smooth over
         public const int maxAverageCount = 12;
         public const int maxAverageCountVertical = 15;
 
@@ -50,8 +61,10 @@ namespace WiiBalanceWalker
         Wiimote wiiBalanceBoard = new Wiimote();
         Wiimote wiiStick = new Wiimote();
         DateTime lastGroundTime = DateTime.UtcNow;
+
         // The last change from left to right
         DateTime lastFootSwitchTime = DateTime.UtcNow;
+
         // The last change in any state (including none)
         DateTime lastFootChangeStateTime = DateTime.UtcNow;
         DateTime lastWalkTime = DateTime.UtcNow;
@@ -63,19 +76,21 @@ namespace WiiBalanceWalker
         {
             Left, Right, None
         }
-
+        // The last foot registed to be down (when the other foot is up)
         Foot lastFoot = Foot.None;
 
+        // State of the player
         bool isWalking = false;
         bool isSprinting = false;
         bool isJumping = false;
-        bool wasOnBalanceBoard = false;
+        bool wasOnBalanceBoardLastTick = false;
 
-        Queue<double> leftRightCentering = new Queue<double>();
-        double leftRightAverage = 0;
+        // For smoothing of tilting
+        Queue<double> horizontalCenteringQueue = new Queue<double>();
+        double horizontalCenteringAverage = 0;
 
-        Queue<double> upDownCentering = new Queue<double>();
-        double upDownAverage = 0;
+        Queue<double> verticalCenteringQueue = new Queue<double>();
+        double verticalCenteringAverage = 0;
 
 
         bool setCenterOffset = false;
@@ -512,18 +527,18 @@ namespace WiiBalanceWalker
             if (turningOn)
             {
                 brX = !float.IsNaN(brX) ? brX : 50;
-                leftRightCentering.Enqueue(brX);
-                leftRightAverage += brX;
-                if (leftRightCentering.Count > maxAverageCount)
+                horizontalCenteringQueue.Enqueue(brX);
+                horizontalCenteringAverage += brX;
+                if (horizontalCenteringQueue.Count > maxAverageCount)
                 {
-                    leftRightAverage -= leftRightCentering.Dequeue();
+                    horizontalCenteringAverage -= horizontalCenteringQueue.Dequeue();
                 }
 
 
                 int turnPercentage = 0;
                 if (isWalking || isSprinting)
                 {
-                    turnPercentage = turning_movement_scale(leftRightAverage / leftRightCentering.Count, tiltMaxMoving, tiltSpeedMoving, turningNullZonePercentageMoving);
+                    turnPercentage = turning_movement_scale(horizontalCenteringAverage / horizontalCenteringQueue.Count, tiltMaxMoving, tiltSpeedMoving, turningNullZonePercentageMoving);
                 }
                 else
                 {
@@ -537,18 +552,18 @@ namespace WiiBalanceWalker
             if (turningVerticalOn)
             {
                 brY = !float.IsNaN(brY) ? brY : 50;
-                upDownCentering.Enqueue(brY);
-                upDownAverage += brY;
-                if (upDownCentering.Count > maxAverageCountVertical)
+                verticalCenteringQueue.Enqueue(brY);
+                verticalCenteringAverage += brY;
+                if (verticalCenteringQueue.Count > maxAverageCountVertical)
                 {
-                    upDownAverage -= upDownCentering.Dequeue();
+                    verticalCenteringAverage -= verticalCenteringQueue.Dequeue();
                 }
 
 
                 int turnPercentage = 0;
                 if (isWalking || isSprinting)
                 {
-                    turnPercentage = turning_movement_scale(upDownAverage / upDownCentering.Count, tiltMaxVerticalMoving, tiltSpeedVerticalMoving, turningNullZonePercentageVerticalMoving);
+                    turnPercentage = turning_movement_scale(verticalCenteringAverage / verticalCenteringQueue.Count, tiltMaxVerticalMoving, tiltSpeedVerticalMoving, turningNullZonePercentageVerticalMoving);
                 }
                 else
                 {
@@ -566,14 +581,14 @@ namespace WiiBalanceWalker
                 double secondsSinceLastJump = (now - lastGroundTime).TotalMilliseconds / 1000;
 
                 // Jump
-                if (!isJumping && wasOnBalanceBoard && offBalanceBoard)
+                if (!isJumping && wasOnBalanceBoardLastTick && offBalanceBoard)
                 {
                     actionList.Jump.Start();
                     BalanceWalker.FormMain.consoleBoxWriteLine("They be jumping");
                     isJumping = true;
                 }
                 // Flying
-                if (isJumping && secondsSinceLastJump >= maxJumpLength)
+                if (isJumping && secondsSinceLastJump >= maxJumpTime)
                 {
                     actionList.Jump.Stop();
                     isJumping = false;
@@ -588,7 +603,7 @@ namespace WiiBalanceWalker
 
                 if (!offBalanceBoard) lastGroundTime = now;
 
-                wasOnBalanceBoard = !offBalanceBoard;
+                wasOnBalanceBoardLastTick = !offBalanceBoard;
 
             }
 
