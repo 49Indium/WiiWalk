@@ -545,7 +545,6 @@ namespace WiiBalanceWalker
                     turnPercentage = turning_movement_scale(brX, tiltMax, tiltSpeed, turningNullZonePercentage);
                 }
                 actionList.Left.changeAmount(turnPercentage);
-                //TODO run only once
                 actionList.Left.Start();
             }
 
@@ -570,7 +569,6 @@ namespace WiiBalanceWalker
                     turnPercentage = turning_movement_scale(brY, tiltMaxVertical, tiltSpeedVertical, turningNullZonePercentageVertical);
                 }
                 actionList.Backward.changeAmount(turnPercentage);
-                //TODO run only once
                 actionList.Backward.Start();
             }
 
