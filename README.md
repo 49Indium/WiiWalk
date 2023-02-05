@@ -1,6 +1,8 @@
 # Wii Walk
 Making the Wii Balance Board a controller for all games.
 
+https://user-images.githubusercontent.com/20060156/216798797-f15304c2-c712-4b64-82ca-e3d83ffa9560.mp4
+
 Wii Walk allows you to turn your wii balance board into a controller, particularly for first person games. It focuses on realistic walking, turning and jumping, letting your character mimic you in the real world. Current detected motions include:
 - Walking (alternating left/right weight shifts)
 - Sprinting (faster weight shifts)
